@@ -5,7 +5,7 @@ export const site = {
   description:
     "Find students who are likely to fail or withdraw while there is still time to help.",
   repoUrl: "https://github.com/abhinavaryan/academic-risk-prediction",
-  institution: "",
-  team: [] as { name: string; role?: string }[],
-  guide: "",
+  institution: " Delhi Technical Campus",
+  team: [{name: "Abhinav Chauhan"},{name : "Parth Arora"}],
+  guide: " Ms.Preeti Pandey",
 };

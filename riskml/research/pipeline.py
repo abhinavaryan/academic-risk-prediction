@@ -678,6 +678,10 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
 
             make_figures(gen, out_root / "reports" / "figures")
             write_report(gen, out_root / "reports" / "results.md")
+            if (out_root / "README.md").exists():
+                from riskml.research.report import update_readme  # noqa: PLC0415
+
+                update_readme(gen, out_root / "README.md")
         except Exception as exc:  # figures are regenerable from the JSON; never lose a run
             log(f"figure/report generation failed ({exc!r}); rerun `python -m "
                 "riskml.research.figures`")

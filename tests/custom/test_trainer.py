@@ -32,8 +32,9 @@ def test_reasons_present_for_scored_rows(uci_result):
     scored = [p for p in uci_result["predictions"] if p["source"] == "scored"]
     high = [p for p in scored if p["band"] == "high"]
     assert high, "some enrolled students should be high risk"
+    # every high-risk student gets reasons, even when the risk is saturated near 100%
     assert all(1 <= len(p["reasons"]) <= 3 for p in high)
-    assert all(r["impact"] > 0 for p in high for r in p["reasons"])
+    assert all(r["log_odds"] > 0 and r["impact"] >= 0 for p in high for r in p["reasons"])
     assert uci_result["importance"][0]["mean_abs_impact"] > 0
 
 
@@ -79,7 +80,8 @@ def test_deterministic(uci_df):
                       models=["Logistic Regression", "Random Forest"])
     a = train_custom(df, cfg)
     b = train_custom(df, cfg)
-    assert a["leaderboard"] == b["leaderboard"]
+    untimed = lambda r: [{k: v for k, v in m.items() if k != "seconds"} for m in r["leaderboard"]]  # noqa: E731
+    assert untimed(a) == untimed(b)
     assert [p["probability"] for p in a["predictions"]] == [p["probability"]
                                                             for p in b["predictions"]]
 

@@ -252,7 +252,7 @@ export interface CustomPrediction {
   at_risk: boolean;
   actual: number | null;
   source: "scored" | "cross-validated";
-  reasons: { feature: string; value: FeatureValue; typical: FeatureValue; impact: number }[];
+  reasons: { feature: string; value: FeatureValue; typical: FeatureValue; impact: number; log_odds: number }[];
 }
 export interface CustomResult {
   summary: {

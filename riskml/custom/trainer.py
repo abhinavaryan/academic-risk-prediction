@@ -142,14 +142,27 @@ def _prepare(df: pd.DataFrame, cfg: TrainConfig, prof: dict, labeled: pd.Series,
     return X[numeric + categorical], numeric, categorical, excluded
 
 
-def _reasons(model, X: pd.DataFrame, baseline: dict, p: np.ndarray) -> np.ndarray:
-    """impacts[i, j] = risk(row i) - risk(row i with feature j set to its baseline)."""
+def _logit(p: np.ndarray) -> np.ndarray:
+    p = np.clip(p, 1e-6, 1 - 1e-6)
+    return np.log(p / (1 - p))
+
+
+def _reasons(model, X: pd.DataFrame, baseline: dict,
+             p: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Baseline-replacement attribution for every row and feature.
+
+    Returns (probability impacts, log-odds impacts). Log-odds stay informative when a risk is
+    saturated near 0% or 100%, where single replacements barely move the probability.
+    """
     impacts = np.zeros((len(X), X.shape[1]))
+    log_odds = np.zeros_like(impacts)
     for j, col in enumerate(X.columns):
         Xb = X.copy()
         Xb[col] = baseline[col]
-        impacts[:, j] = p - model.predict_proba(Xb)[:, 1]
-    return impacts
+        pb = model.predict_proba(Xb)[:, 1]
+        impacts[:, j] = p - pb
+        log_odds[:, j] = _logit(p) - _logit(pb)
+    return impacts, log_odds
 
 
 def _fmt(v):
@@ -255,13 +268,15 @@ def train_custom(df: pd.DataFrame, cfg: TrainConfig,
     if explain_idx:
         Xe = X.loc[explain_idx]
         pe = final.predict_proba(Xe)[:, 1]
-        impacts = _reasons(final, Xe, baseline, pe)
+        impacts, log_odds = _reasons(final, Xe, baseline, pe)
         cols = list(X.columns)
         for row_i, idx in enumerate(explain_idx):
-            top = [j for j in np.argsort(-impacts[row_i])[:3] if impacts[row_i, j] > 0.005]
+            top = [j for j in np.argsort(-log_odds[row_i])[:3] if log_odds[row_i, j] > 0.05]
             reasons_by_row[idx] = [{"feature": cols[j], "value": _fmt(Xe.iloc[row_i, j]),
                                     "typical": _fmt(baseline[cols[j]]),
-                                    "impact": round(float(impacts[row_i, j]), 4)} for j in top]
+                                    "impact": round(max(0.0, float(impacts[row_i, j])), 4),
+                                    "log_odds": round(float(log_odds[row_i, j]), 4)}
+                                   for j in top]
         mean_abs = np.abs(impacts).mean(axis=0)
         importance = sorted(({"feature": c, "mean_abs_impact": round(float(v), 4)}
                              for c, v in zip(cols, mean_abs, strict=True)),

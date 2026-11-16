@@ -1,0 +1,41 @@
+{
+ "version": "1.0.0",
+ "created_at": "2026-11-16T20:37:46+00:00",
+ "sklearn": "1.9.1",
+ "skops": "0.16.0",
+ "data_sha256": "f2ed1902616c1fe8d2824d872c0b7d2d72be435bf0124d077044fe4be2c6d3e4",
+ "cutoffs": [
+  0,
+  30,
+  60,
+  90,
+  120,
+  150,
+  180
+ ],
+ "primary_cutoff": 60,
+ "quick": false,
+ "files": {
+  "models/model_day0.skops": "1594b0f4f365c69f1626a15c200224375e0697ee37ea43425a1b5896fc4b02e0",
+  "models/model_day120.skops": "3078de70a908c715d93636c892f6e3e01e7288026790f8c69eed5206e7f3d2a7",
+  "models/model_day150.skops": "ebcd6e47e67bdbcedeb8ef13c86fd8987cccd6654d09985c7fb9365aac66e84c",
+  "models/model_day180.skops": "b8f90cdaa3efd86ccf69526a618cff125f2217cdff2ca93b69ee5bd73180c622",
+  "models/model_day30.skops": "e80bc488360f450253b160b1378a3833300c911f74df614b42967023c98593b5",
+  "models/model_day60.skops": "7c714433540c275eceb56e888138915e2dab758f10c5a8ee2e5f6ed428fcbd29",
+  "models/model_day90.skops": "a8eab3acdaa1ad54cc2eef8b86c69450032e7bfa3ad617b95781037a03ca1ddb",
+  "samples/day0.json": "e3879fab55fcc7a9c75b0a722844acd70e5bd84bc13d03cad191b0a005b8272c",
+  "samples/day120.json": "8607fa9bc4c1dce934f111ef708797d8306b909f42294a425063316338101f11",
+  "samples/day150.json": "f411dcbefe82bd1b4eafb16ef0cf03159765014ecf4a8fd005d1adebad996145",
+  "samples/day180.json": "85e61795686b01fa0173a582113b11ab62450c565372c1912cac3909bcbd2ae8",
+  "samples/day30.json": "8e8054c0a53e5f3aa66d9bf0e6cf4df345d2bc6038fa546059a655192c2c85ae",
+  "samples/day60.json": "806fc0c1e3b80e4042c095c7dfc249e034b1663b7b8e4fc72af28581af5ddde4",
+  "samples/day90.json": "6d7ed311102851ff0dab308758cab77dead3b2ccc5260f2403447ec54ddbdfd6",
+  "schema/day0.json": "892a084ffac027a6c39ab016190d031a117c979c39529ce003816e3d5cf387ac",
+  "schema/day120.json": "1d766692ffd8865c16ebb31dc81bcf903ebd7d8558809e702f12e09ff0e05b5c",
+  "schema/day150.json": "cef4ed969eb4bddcedec062afdf49a93e482c84b69fa154d4f61ab5de02be204",
+  "schema/day180.json": "ef31db5b4fe718090267f67f0e770d5fb712bfef9dc2efe194a97809364d49f7",
+  "schema/day30.json": "2da52a7ef0898cd75da31d8fdc50086089d6a25b0d27db41ea482e060d53932d",
+  "schema/day60.json": "2196ef7b008fb70e2e287fe13742bda96ddf5c58f8e7eb7ce046489fdd751910",
+  "schema/day90.json": "ae0818e7f1e7d329013d94f4b23a408ded73c309a68bfd6588a58550e7fe089e"
+ }
+}

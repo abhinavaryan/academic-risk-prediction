@@ -5,19 +5,46 @@
    "variant": "Demographics only",
    "n_features": 8,
    "roc_auc": 0.6268,
-   "f1": 0.5618,
-   "precision": 0.4038,
-   "recall": 0.9232,
-   "accuracy": 0.4511
+   "f1": 0.5602,
+   "precision": 0.4156,
+   "recall": 0.859,
+   "accuracy": 0.4859
+  },
+  {
+   "variant": "+ Course & registration",
+   "n_features": 12,
+   "roc_auc": 0.6476,
+   "f1": 0.5725,
+   "precision": 0.4406,
+   "recall": 0.8173,
+   "accuracy": 0.5348
+  },
+  {
+   "variant": "+ Assessments",
+   "n_features": 26,
+   "roc_auc": 0.8005,
+   "f1": 0.661,
+   "precision": 0.5896,
+   "recall": 0.7522,
+   "accuracy": 0.7059
   },
   {
    "variant": "All features (+ VLE engagement)",
    "n_features": 49,
    "roc_auc": 0.8206,
-   "f1": 0.6811,
-   "precision": 0.6198,
-   "recall": 0.7557,
-   "accuracy": 0.7302
+   "f1": 0.6806,
+   "precision": 0.621,
+   "recall": 0.7528,
+   "accuracy": 0.7307
+  },
+  {
+   "variant": "All except protected attributes",
+   "n_features": 44,
+   "roc_auc": 0.8186,
+   "f1": 0.6795,
+   "precision": 0.6286,
+   "recall": 0.7394,
+   "accuracy": 0.7342
   }
  ]
 }

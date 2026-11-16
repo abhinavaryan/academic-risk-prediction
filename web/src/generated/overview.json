@@ -1,8 +1,8 @@
 {
- "generated_at": "2026-11-16T20:08:28+00:00",
+ "generated_at": "2026-11-16T20:37:46+00:00",
  "version": "1.0.0",
- "quick": true,
- "runtime_minutes": 0.8,
+ "quick": false,
+ "runtime_minutes": 33.2,
  "dataset": {
   "registrations": 32593,
   "students": 28785,
@@ -24,115 +24,120 @@
   "test_presentation": "2014J",
   "n_train": 17543,
   "n_test": 8818,
-  "cv_folds": 2,
+  "cv_folds": 5,
   "cv": "StratifiedGroupKFold grouped by student"
  },
  "primary_cutoff": 60,
  "cutoffs": [
   0,
-  60
+  30,
+  60,
+  90,
+  120,
+  150,
+  180
  ],
- "n_models": 4,
+ "n_models": 19,
  "n_features": 49,
  "champion": {
-  "name": "Logistic Regression",
+  "name": "Stacked Ensemble",
   "test": {
-   "accuracy": 0.7302,
-   "precision": 0.6198,
-   "recall": 0.7557,
-   "f1": 0.6811,
-   "roc_auc": 0.8206,
-   "pr_auc": 0.7719,
-   "mcc": 0.4579,
-   "balanced_accuracy": 0.7351,
-   "brier": 0.1616,
-   "log_loss": 0.4927,
-   "threshold": 0.3539,
-   "tp": 2540,
-   "fp": 1558,
-   "tn": 3899,
-   "fn": 821
+   "accuracy": 0.7231,
+   "precision": 0.6055,
+   "recall": 0.7849,
+   "f1": 0.6836,
+   "roc_auc": 0.818,
+   "pr_auc": 0.769,
+   "mcc": 0.4564,
+   "balanced_accuracy": 0.7349,
+   "brier": 0.1684,
+   "log_loss": 0.5067,
+   "threshold": 0.3179,
+   "tp": 2638,
+   "fp": 1719,
+   "tn": 3738,
+   "fn": 723
   },
-  "cv_roc_auc": 0.8439,
+  "cv_roc_auc": 0.8487,
   "ci95": {
    "accuracy": [
-    0.7194,
-    0.7393
+    0.7137,
+    0.7319
    ],
    "precision": [
-    0.6033,
-    0.636
+    0.5912,
+    0.6203
    ],
    "recall": [
-    0.7405,
-    0.7714
+    0.7721,
+    0.799
    ],
    "f1": [
-    0.6665,
-    0.6955
+    0.6722,
+    0.6956
    ],
    "roc_auc": [
-    0.81,
-    0.8283
+    0.8087,
+    0.8267
    ],
    "pr_auc": [
-    0.7601,
-    0.7866
+    0.7556,
+    0.7825
    ],
    "mcc": [
-    0.4366,
-    0.4776
+    0.4384,
+    0.4746
    ]
   }
  },
  "deployed": {
   "name": "Logistic Regression",
   "test": {
-   "accuracy": 0.7302,
-   "precision": 0.6198,
-   "recall": 0.7557,
-   "f1": 0.6811,
+   "accuracy": 0.7332,
+   "precision": 0.6259,
+   "recall": 0.7453,
+   "f1": 0.6804,
    "roc_auc": 0.8206,
    "pr_auc": 0.7719,
-   "mcc": 0.4579,
-   "balanced_accuracy": 0.7351,
+   "mcc": 0.4595,
+   "balanced_accuracy": 0.7355,
    "brier": 0.1616,
    "log_loss": 0.4927,
-   "threshold": 0.3539,
-   "tp": 2540,
-   "fp": 1558,
-   "tn": 3899,
-   "fn": 821
+   "threshold": 0.3635,
+   "tp": 2505,
+   "fp": 1497,
+   "tn": 3960,
+   "fn": 856
   },
-  "cv_roc_auc": 0.8439,
+  "cv_roc_auc": 0.8455,
   "ci95": {
    "accuracy": [
-    0.7194,
-    0.7393
+    0.7243,
+    0.7428
    ],
    "precision": [
-    0.6033,
-    0.636
+    0.6118,
+    0.6416
    ],
    "recall": [
-    0.7405,
-    0.7714
+    0.732,
+    0.7583
    ],
    "f1": [
-    0.6665,
-    0.6955
+    0.6693,
+    0.6931
    ],
    "roc_auc": [
-    0.81,
-    0.8283
+    0.8117,
+    0.8296
    ],
    "pr_auc": [
-    0.7601,
-    0.7866
+    0.7581,
+    0.7859
    ],
    "mcc": [
-    0.4366,
-    0.4776
+    0.4417,
+    0.4785
    ]
   },
   "reason": "Highest cross-validated ROC-AUC among scikit-learn-native models, which run on the serverless runtime without extra native libraries and load securely with skops."
@@ -140,44 +145,44 @@
  "early_warning": {
   "cutoff": 60,
   "roc_auc": 0.8206,
-  "f1": 0.6811,
-  "precision": 0.6198,
-  "recall": 0.7557,
-  "accuracy": 0.7302,
+  "f1": 0.6804,
+  "precision": 0.6259,
+  "recall": 0.7453,
+  "accuracy": 0.7332,
   "pr_auc": 0.7719,
-  "tp": 2540,
-  "fp": 1558,
-  "fn": 821,
-  "tn": 3899,
-  "threshold": 0.3539,
+  "tp": 2505,
+  "fp": 1497,
+  "fn": 856,
+  "tn": 3960,
+  "threshold": 0.3635,
   "ci95": {
    "accuracy": [
-    0.7194,
-    0.7393
+    0.7243,
+    0.7428
    ],
    "precision": [
-    0.6033,
-    0.636
+    0.6118,
+    0.6416
    ],
    "recall": [
-    0.7405,
-    0.7714
+    0.732,
+    0.7583
    ],
    "f1": [
-    0.6665,
-    0.6955
+    0.6693,
+    0.6931
    ],
    "roc_auc": [
-    0.81,
-    0.8283
+    0.8117,
+    0.8296
    ],
    "pr_auc": [
-    0.7601,
-    0.7866
+    0.7581,
+    0.7859
    ],
    "mcc": [
-    0.4366,
-    0.4776
+    0.4417,
+    0.4785
    ]
   },
   "at_risk_remaining_test": 3361

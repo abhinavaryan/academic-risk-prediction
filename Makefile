@@ -12,7 +12,7 @@ install-research:   ## + LightGBM/XGBoost/CatBoost/Optuna for the research pipel
 data:               ## download + verify OULAD from the UCI repository
 	$(PY) -m riskml.oulad.download --dest $(DATA_DIR)
 
-research: data      ## full research run (~1 h on 4 cores); rewrites artifacts/ and web/src/generated/
+research: data      ## full research run (~35 min on 4 cores); rewrites artifacts/ and web/src/generated/
 	$(PY) -m riskml.research.pipeline --data-dir $(DATA_DIR)
 
 research-quick: data

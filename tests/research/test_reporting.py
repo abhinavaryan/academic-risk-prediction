@@ -23,3 +23,14 @@ def test_figures_render(tmp_path):
     files = make_figures(GENERATED_DIR, tmp_path)
     assert len(files) >= 10
     assert all(f.stat().st_size > 10_000 for f in files)
+
+
+def test_readme_results_block_is_generated(tmp_path):
+    from riskml.research.report import update_readme
+
+    readme = tmp_path / "README.md"
+    readme.write_text("intro\n<!-- RESULTS:START -->\nold\n<!-- RESULTS:END -->\noutro\n")
+    update_readme(GENERATED_DIR, readme)
+    text = readme.read_text()
+    assert "old" not in text and text.startswith("intro") and text.endswith("outro\n")
+    assert "ROC-AUC" in text and "<!-- RESULTS:END -->" in text

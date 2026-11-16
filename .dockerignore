@@ -11,5 +11,4 @@ web/.next
 web/out
 web/test-results
 web/playwright-report
-.superpowers
 **/__pycache__

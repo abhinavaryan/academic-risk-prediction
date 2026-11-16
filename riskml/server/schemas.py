@@ -26,7 +26,8 @@ class PredictRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     cutoff: Annotated[int, Field(strict=True, ge=0, le=400)]
     features: Annotated[dict[ShortStr, FeatureValue], Field(max_length=200)] = Field(
-        default_factory=dict)
+        default_factory=dict
+    )
 
 
 class FactorOut(BaseModel):
@@ -53,16 +54,15 @@ class PredictResponse(BaseModel):
 class TrainConfigIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
     target: ShortStr
-    positive_values: Annotated[list[ShortStr], Field(max_length=100)] = Field(
-        default_factory=list)
+    positive_values: Annotated[list[ShortStr], Field(max_length=100)] = Field(default_factory=list)
     negative_values: Annotated[list[ShortStr], Field(max_length=100)] | None = None
-    unknown_values: Annotated[list[ShortStr], Field(max_length=100)] = Field(
-        default_factory=list)
+    unknown_values: Annotated[list[ShortStr], Field(max_length=100)] = Field(default_factory=list)
     positive_below: float | None = None
     id_column: ShortStr | None = None
     exclude: Annotated[list[ShortStr], Field(max_length=200)] = Field(default_factory=list)
-    models: Annotated[list[ModelName], Field(min_length=1, max_length=len(SERVING_MODELS))] | None \
-        = None
+    models: (
+        Annotated[list[ModelName], Field(min_length=1, max_length=len(SERVING_MODELS))] | None
+    ) = None
 
     @field_validator("positive_below")
     @classmethod

@@ -13,7 +13,10 @@ def test_reads_uci_semicolon_bom_tab_header(uci_df):
     assert uci_df.columns[0] == "Marital status"  # BOM stripped
     assert "Daytime/evening attendance" in uci_df.columns  # trailing tab stripped
     assert uci_df["Target"].value_counts().to_dict() == {
-        "Graduate": 2209, "Dropout": 1421, "Enrolled": 794}
+        "Graduate": 2209,
+        "Dropout": 1421,
+        "Enrolled": 794,
+    }
 
 
 def test_cp1252():
@@ -31,8 +34,9 @@ def test_comma_csv_with_quotes_and_percent():
 
 
 def test_xlsx_roundtrip():
-    src = pd.DataFrame({"Roll No": [1, 2, 3], "Attendance": [90.5, 40, 75],
-                        "Result": ["Pass", "Fail", None]})
+    src = pd.DataFrame(
+        {"Roll No": [1, 2, 3], "Attendance": [90.5, 40, 75], "Result": ["Pass", "Fail", None]}
+    )
     buf = io.BytesIO()
     src.to_excel(buf, index=False)
     df = read_table(buf.getvalue(), "sheet.xlsx")

@@ -38,9 +38,13 @@ from riskml.serving.predictor import band_of
 LEAKAGE_AUC = 0.98
 REASON_ROWS_OVER_BUDGET = 300
 MAX_PREDICTION_ROWS = 10_000
-_UNUSABLE = {"id": "identifier column", "pii": "personal data (never used)",
-             "text": "free text", "constant": "same value in every row",
-             "empty": "no values"}
+_UNUSABLE = {
+    "id": "identifier column",
+    "pii": "personal data (never used)",
+    "text": "free text",
+    "constant": "same value in every row",
+    "empty": "no values",
+}
 
 
 class TrainingError(ValueError):
@@ -86,8 +90,9 @@ def _labels(df: pd.DataFrame, cfg: TrainConfig, warnings: list[str]) -> pd.Serie
         y[values.isin(neg)] = 0.0
         other = ~values.isin(pos | neg | unknown)
         if other.any():
-            warnings.append(f"{int(other.sum())} rows have a result value that was not mapped "
-                            "and were ignored.")
+            warnings.append(
+                f"{int(other.sum())} rows have a result value that was not mapped and were ignored."
+            )
             y[other] = -1.0
     return y
 
@@ -105,8 +110,14 @@ def _single_feature_auc(x: pd.Series, y: np.ndarray, numeric: bool) -> float:
     return max(auc, 1 - auc)
 
 
-def _prepare(df: pd.DataFrame, cfg: TrainConfig, prof: dict, labeled: pd.Series,
-             y: np.ndarray, warnings: list[str]):
+def _prepare(
+    df: pd.DataFrame,
+    cfg: TrainConfig,
+    prof: dict,
+    labeled: pd.Series,
+    y: np.ndarray,
+    warnings: list[str],
+):
     roles = {c["name"]: c["role"] for c in prof["columns"]}
     skip = {cfg.target, cfg.id_column, *cfg.exclude}
     excluded = [{"column": c, "reason": "excluded by you"} for c in cfg.exclude if c in roles]
@@ -128,17 +139,23 @@ def _prepare(df: pd.DataFrame, cfg: TrainConfig, prof: dict, labeled: pd.Series,
     for c in [*numeric, *categorical]:
         auc = _single_feature_auc(X.loc[labeled, c], y, c in numeric)
         if auc >= LEAKAGE_AUC:
-            excluded.append({"column": c, "reason": f"possible target leak (AUC {auc:.3f} "
-                                                    "on its own)"})
-            warnings.append(f"'{c}' predicts the result almost perfectly on its own "
-                            f"(AUC {auc:.3f}); it looks like it leaks the answer and was "
-                            "excluded.")
+            excluded.append(
+                {"column": c, "reason": f"possible target leak (AUC {auc:.3f} on its own)"}
+            )
+            warnings.append(
+                f"'{c}' predicts the result almost perfectly on its own "
+                f"(AUC {auc:.3f}); it looks like it leaks the answer and was "
+                "excluded."
+            )
     leaked = {e["column"] for e in excluded}
     numeric = [c for c in numeric if c not in leaked]
     categorical = [c for c in categorical if c not in leaked]
     if not numeric and not categorical:
-        raise TrainingError("no_features", "No usable feature columns are left after removing "
-                                           "IDs, personal data, text and leaky columns.")
+        raise TrainingError(
+            "no_features",
+            "No usable feature columns are left after removing "
+            "IDs, personal data, text and leaky columns.",
+        )
     return X[numeric + categorical], numeric, categorical, excluded
 
 
@@ -147,8 +164,9 @@ def _logit(p: np.ndarray) -> np.ndarray:
     return np.log(p / (1 - p))
 
 
-def _reasons(model, X: pd.DataFrame, baseline: dict,
-             p: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def _reasons(
+    model, X: pd.DataFrame, baseline: dict, p: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
     """Baseline-replacement attribution for every row and feature.
 
     Returns (probability impacts, log-odds impacts). Log-odds stay informative when a risk is
@@ -171,8 +189,12 @@ def _fmt(v):
     return v
 
 
-def train_custom(df: pd.DataFrame, cfg: TrainConfig,
-                 time_budget_s: float = CUSTOM_TIME_BUDGET_S, seed: int = SEED) -> dict:
+def train_custom(
+    df: pd.DataFrame,
+    cfg: TrainConfig,
+    time_budget_s: float = CUSTOM_TIME_BUDGET_S,
+    seed: int = SEED,
+) -> dict:
     started = time.perf_counter()
     warnings: list[str] = []
     for col in [cfg.target, cfg.id_column, *cfg.exclude]:
@@ -191,23 +213,32 @@ def train_custom(df: pd.DataFrame, cfg: TrainConfig,
     y = y_all[labeled].astype(int).to_numpy()
     n_pos, n_neg = int(y.sum()), int(len(y) - y.sum())
     if len(y) < MIN_LABELED_ROWS:
-        raise TrainingError("too_few_rows", f"Need at least {MIN_LABELED_ROWS} rows with a known "
-                                            f"result; found {len(y)}.")
+        raise TrainingError(
+            "too_few_rows",
+            f"Need at least {MIN_LABELED_ROWS} rows with a known result; found {len(y)}.",
+        )
     if min(n_pos, n_neg) == 0:
-        raise TrainingError("single_class", "All labeled rows have the same result, so there is "
-                                            "nothing to learn. Check the at-risk values.")
+        raise TrainingError(
+            "single_class",
+            "All labeled rows have the same result, so there is "
+            "nothing to learn. Check the at-risk values.",
+        )
     if min(n_pos, n_neg) < MIN_CLASS_COUNT:
-        raise TrainingError("too_few_rows", f"Need at least {MIN_CLASS_COUNT} at-risk and "
-                                            f"{MIN_CLASS_COUNT} not-at-risk examples.")
+        raise TrainingError(
+            "too_few_rows",
+            f"Need at least {MIN_CLASS_COUNT} at-risk and {MIN_CLASS_COUNT} not-at-risk examples.",
+        )
 
     prof = profile(df)
     X, numeric, categorical, excluded = _prepare(df, cfg, prof, labeled, y, warnings)
     X_lab = X[labeled].reset_index(drop=True)
     n_splits = int(min(5, n_pos, n_neg))
-    splits = list(StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed)
-                  .split(X_lab, y))
-    zoo = serving_zoo(numeric, categorical, seed=seed, n_samples=len(y) * (n_splits - 1)
-                      // n_splits)
+    splits = list(
+        StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=seed).split(X_lab, y)
+    )
+    zoo = serving_zoo(
+        numeric, categorical, seed=seed, n_samples=len(y) * (n_splits - 1) // n_splits
+    )
     names = [m for m in SERVING_MODELS if cfg.models is None or m in cfg.models]
 
     leaderboard, oofs, skipped = [], {}, []
@@ -232,16 +263,32 @@ def train_custom(df: pd.DataFrame, cfg: TrainConfig,
         thr = best_f1_threshold(y, oof)
         m = binary_metrics(y, oof, thr)
         oofs[name] = (oof, thr)
-        leaderboard.append({
-            "name": name, "family": MODEL_INFO[name]["family"],
-            **{k: m[k] for k in ("roc_auc", "f1", "precision", "recall", "accuracy", "pr_auc",
-                                 "mcc", "balanced_accuracy")},
-            "roc_auc_std": round(float(np.nanstd(aucs)), 4), "threshold": round(thr, 4),
-            "seconds": round(time.perf_counter() - t0, 2),
-        })
+        leaderboard.append(
+            {
+                "name": name,
+                "family": MODEL_INFO[name]["family"],
+                **{
+                    k: m[k]
+                    for k in (
+                        "roc_auc",
+                        "f1",
+                        "precision",
+                        "recall",
+                        "accuracy",
+                        "pr_auc",
+                        "mcc",
+                        "balanced_accuracy",
+                    )
+                },
+                "roc_auc_std": round(float(np.nanstd(aucs)), 4),
+                "threshold": round(thr, 4),
+                "seconds": round(time.perf_counter() - t0, 2),
+            }
+        )
     if skipped:
-        warnings.append(f"Skipped {', '.join(skipped)} to stay within the "
-                        f"{time_budget_s:g}s time budget.")
+        warnings.append(
+            f"Skipped {', '.join(skipped)} to stay within the {time_budget_s:g}s time budget."
+        )
     leaderboard.sort(key=lambda r: (r["roc_auc"], r["f1"]), reverse=True)
     champion = leaderboard[0]["name"]
     oof, thr = oofs[champion]
@@ -256,13 +303,20 @@ def train_custom(df: pd.DataFrame, cfg: TrainConfig,
     # Explain: every scored row, then the riskiest labeled rows, up to MAX_REASON_ROWS.
     order = list(df.index[scored]) + list(proba[labeled].sort_values(ascending=False).index)
     over_budget = time.perf_counter() - started > time_budget_s
-    explain_idx = order[:REASON_ROWS_OVER_BUDGET if over_budget else MAX_REASON_ROWS]
+    explain_idx = order[: REASON_ROWS_OVER_BUDGET if over_budget else MAX_REASON_ROWS]
     if over_budget and len(order) > len(explain_idx):
-        warnings.append(f"Reasons were computed for the {len(explain_idx)} highest-priority rows "
-                        "only, to stay within the time budget.")
-    baseline = {c: (X_lab[c].median() if c in numeric else
-                    (X_lab[c].mode().iloc[0] if X_lab[c].notna().any() else np.nan))
-                for c in X.columns}
+        warnings.append(
+            f"Reasons were computed for the {len(explain_idx)} highest-priority rows "
+            "only, to stay within the time budget."
+        )
+    baseline = {
+        c: (
+            X_lab[c].median()
+            if c in numeric
+            else (X_lab[c].mode().iloc[0] if X_lab[c].notna().any() else np.nan)
+        )
+        for c in X.columns
+    }
     reasons_by_row: dict[int, list] = {}
     importance = []
     if explain_idx:
@@ -272,46 +326,71 @@ def train_custom(df: pd.DataFrame, cfg: TrainConfig,
         cols = list(X.columns)
         for row_i, idx in enumerate(explain_idx):
             top = [j for j in np.argsort(-log_odds[row_i])[:3] if log_odds[row_i, j] > 0.05]
-            reasons_by_row[idx] = [{"feature": cols[j], "value": _fmt(Xe.iloc[row_i, j]),
-                                    "typical": _fmt(baseline[cols[j]]),
-                                    "impact": round(max(0.0, float(impacts[row_i, j])), 4),
-                                    "log_odds": round(float(log_odds[row_i, j]), 4)}
-                                   for j in top]
+            reasons_by_row[idx] = [
+                {
+                    "feature": cols[j],
+                    "value": _fmt(Xe.iloc[row_i, j]),
+                    "typical": _fmt(baseline[cols[j]]),
+                    "impact": round(max(0.0, float(impacts[row_i, j])), 4),
+                    "log_odds": round(float(log_odds[row_i, j]), 4),
+                }
+                for j in top
+            ]
         mean_abs = np.abs(impacts).mean(axis=0)
-        importance = sorted(({"feature": c, "mean_abs_impact": round(float(v), 4)}
-                             for c, v in zip(cols, mean_abs, strict=True)),
-                            key=lambda r: r["mean_abs_impact"], reverse=True)
+        importance = sorted(
+            (
+                {"feature": c, "mean_abs_impact": round(float(v), 4)}
+                for c, v in zip(cols, mean_abs, strict=True)
+            ),
+            key=lambda r: r["mean_abs_impact"],
+            reverse=True,
+        )
 
     ids = df[cfg.id_column] if cfg.id_column else None
     predictions = []
     out_order = list(df.index[scored]) + list(proba[labeled].sort_values(ascending=False).index)
     if len(out_order) > MAX_PREDICTION_ROWS:
-        warnings.append(f"Showing the {MAX_PREDICTION_ROWS:,} highest-priority rows of "
-                        f"{len(out_order):,}.")
+        warnings.append(
+            f"Showing the {MAX_PREDICTION_ROWS:,} highest-priority rows of {len(out_order):,}."
+        )
         out_order = out_order[:MAX_PREDICTION_ROWS]
     for idx in out_order:
         p = float(proba[idx])
         is_scored = bool(scored[idx])
         label = _norm(ids[idx]) if ids is not None else ""
-        predictions.append({
-            "row": int(idx) + 2,  # spreadsheet row number (row 1 is the header)
-            "label": label or f"Row {int(idx) + 2}",
-            "probability": round(p, 4), "band": band_of(p), "at_risk": p >= thr,
-            "actual": None if is_scored else int(y_all[idx]),
-            "source": "scored" if is_scored else "cross-validated",
-            "reasons": reasons_by_row.get(idx, []),
-        })
+        predictions.append(
+            {
+                "row": int(idx) + 2,  # spreadsheet row number (row 1 is the header)
+                "label": label or f"Row {int(idx) + 2}",
+                "probability": round(p, 4),
+                "band": band_of(p),
+                "at_risk": p >= thr,
+                "actual": None if is_scored else int(y_all[idx]),
+                "source": "scored" if is_scored else "cross-validated",
+                "reasons": reasons_by_row.get(idx, []),
+            }
+        )
 
     champ_metrics = binary_metrics(y, oof, thr)
     return {
         "summary": {
-            "n_rows": len(df), "n_labeled": len(y), "n_scored": int(scored.sum()),
-            "n_ignored": int((y_all == -1).sum()), "n_positive": n_pos, "n_negative": n_neg,
-            "positive_rate": round(n_pos / len(y), 4), "cv_folds": n_splits,
-            "features_used": list(X.columns), "excluded": excluded, "target": cfg.target,
-            "positive_values": cfg.positive_values, "negative_values": cfg.negative_values,
-            "unknown_values": cfg.unknown_values, "positive_below": cfg.positive_below,
-            "id_column": cfg.id_column, "n_explained": len(explain_idx),
+            "n_rows": len(df),
+            "n_labeled": len(y),
+            "n_scored": int(scored.sum()),
+            "n_ignored": int((y_all == -1).sum()),
+            "n_positive": n_pos,
+            "n_negative": n_neg,
+            "positive_rate": round(n_pos / len(y), 4),
+            "cv_folds": n_splits,
+            "features_used": list(X.columns),
+            "excluded": excluded,
+            "target": cfg.target,
+            "positive_values": cfg.positive_values,
+            "negative_values": cfg.negative_values,
+            "unknown_values": cfg.unknown_values,
+            "positive_below": cfg.positive_below,
+            "id_column": cfg.id_column,
+            "n_explained": len(explain_idx),
         },
         "leaderboard": leaderboard,
         "champion": champion,

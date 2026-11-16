@@ -30,8 +30,12 @@ def test_extra_field_rejected(client):
 def test_wrong_types_rejected(client):
     assert client.post("/api/predict", json={"cutoff": "sixty", "features": {}}).status_code == 422
     assert client.post("/api/predict", json={"cutoff": 60, "features": [1, 2]}).status_code == 422
-    assert client.post("/api/predict", content=b"not json",
-                       headers={"content-type": "application/json"}).status_code == 422
+    assert (
+        client.post(
+            "/api/predict", content=b"not json", headers={"content-type": "application/json"}
+        ).status_code
+        == 422
+    )
 
 
 def test_too_many_features_rejected(client):

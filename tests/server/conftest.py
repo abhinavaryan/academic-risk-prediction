@@ -15,6 +15,7 @@ def make_client(server_artifacts):
     def factory(**kwargs):
         kwargs.setdefault("artifacts_dir", server_artifacts)
         return TestClient(create_app(**kwargs), raise_server_exceptions=False)
+
     return factory
 
 

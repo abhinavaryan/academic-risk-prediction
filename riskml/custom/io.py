@@ -17,8 +17,23 @@ import pandas as pd
 
 from riskml.config import MAX_COLS, MAX_ROWS, MAX_UPLOAD_BYTES, MAX_XLSX_UNCOMPRESSED
 
-NA_VALUES = ["", "NA", "N/A", "n/a", "na", "-", "--", "?", "null", "NULL", "None", "none",
-             "nan", "NaN", "#N/A"]
+NA_VALUES = [
+    "",
+    "NA",
+    "N/A",
+    "n/a",
+    "na",
+    "-",
+    "--",
+    "?",
+    "null",
+    "NULL",
+    "None",
+    "none",
+    "nan",
+    "NaN",
+    "#N/A",
+]
 _XLSX_MAGIC = b"PK\x03\x04"
 _XLS_MAGIC = b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1"
 _WS = re.compile(r"\s+")
@@ -77,8 +92,15 @@ def _read_csv(data: bytes) -> pd.DataFrame:
     except csv.Error:
         delimiter = ","
     try:
-        raw = pd.read_csv(io.StringIO(text), sep=delimiter, dtype=str, na_values=NA_VALUES,
-                          keep_default_na=False, skip_blank_lines=True, header=None)
+        raw = pd.read_csv(
+            io.StringIO(text),
+            sep=delimiter,
+            dtype=str,
+            na_values=NA_VALUES,
+            keep_default_na=False,
+            skip_blank_lines=True,
+            header=None,
+        )
         # Take the header row ourselves so duplicate names are not silently mangled.
         df = raw.iloc[1:].reset_index(drop=True)
         df.columns = list(raw.iloc[0])
@@ -107,8 +129,9 @@ def _read_xlsx(data: bytes) -> pd.DataFrame:
         raise UploadError("unreadable", "The Excel file is damaged.") from exc
     infos = zf.infolist()
     if len(infos) > 2000 or sum(i.file_size for i in infos) > MAX_XLSX_UNCOMPRESSED:
-        raise UploadError("xlsx_too_large",
-                          "The Excel file expands to more than 60 MB. Save it as CSV instead.")
+        raise UploadError(
+            "xlsx_too_large", "The Excel file expands to more than 60 MB. Save it as CSV instead."
+        )
     from openpyxl import load_workbook  # noqa: PLC0415
 
     try:
@@ -136,12 +159,15 @@ def read_table(data: bytes, filename: str) -> pd.DataFrame:
     if not data:
         raise UploadError("empty", "The file is empty.")
     if len(data) > MAX_UPLOAD_BYTES:
-        raise UploadError("too_large",
-                          f"Files up to {MAX_UPLOAD_BYTES // 1_000_000} MB are supported.")
+        raise UploadError(
+            "too_large", f"Files up to {MAX_UPLOAD_BYTES // 1_000_000} MB are supported."
+        )
     if data.startswith(_XLS_MAGIC):
-        raise UploadError("legacy_excel",
-                          "Old .xls files are not supported. In Excel choose File > Save As > "
-                          ".xlsx (or CSV) and upload that.")
+        raise UploadError(
+            "legacy_excel",
+            "Old .xls files are not supported. In Excel choose File > Save As > "
+            ".xlsx (or CSV) and upload that.",
+        )
     df = _read_xlsx(data) if data.startswith(_XLSX_MAGIC) else _read_csv(data)
     if df.shape[1] > MAX_COLS:
         raise UploadError("too_many_columns", f"At most {MAX_COLS} columns are supported.")

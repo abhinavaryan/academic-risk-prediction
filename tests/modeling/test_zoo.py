@@ -10,11 +10,13 @@ from riskml.modeling.zoo import SERVING_MODELS, make_preprocessor, serving_zoo
 def _toy():
     rng = np.random.default_rng(0)
     n = 300
-    X = pd.DataFrame({
-        "a": rng.normal(size=n),
-        "b": np.where(rng.random(n) < 0.1, np.nan, rng.normal(size=n)),
-        "c": rng.choice(["x", "y", "z"], n),
-    })
+    X = pd.DataFrame(
+        {
+            "a": rng.normal(size=n),
+            "b": np.where(rng.random(n) < 0.1, np.nan, rng.normal(size=n)),
+            "c": rng.choice(["x", "y", "z"], n),
+        }
+    )
     y = ((X["a"] + (X["c"] == "x")) > 0.5).astype(int)
     return X, y
 

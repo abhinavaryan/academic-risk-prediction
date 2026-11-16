@@ -23,14 +23,18 @@ _PHONE = re.compile(r"^\+?[\d\s()-]{10,15}$")
 _ID_NAME = re.compile(
     r"(^id$|_id$|^id[_\s]|\bid\b|roll|enrol+ment\s*(no|number)|registration\s*(no|number)|"
     r"admission\s*(no|number)|student\s*(id|no|number)|\buid\b|serial|^s\.?\s?no\.?$|^sr\.?\s?no)",
-    re.I)
+    re.I,
+)
 _PII_NAME = re.compile(r"(name|e-?mail|phone|mobile|contact|address|aadha?r|guardian)", re.I)
 _TARGET_NAME = re.compile(
-    r"(target|result|outcome|status|label|class|final|pass|fail|dropout|grade|risk)", re.I)
+    r"(target|result|outcome|status|label|class|final|pass|fail|dropout|grade|risk)", re.I
+)
 _POSITIVE = re.compile(
-    r"(fail|drop|withdr|detain|backlog|risk|reappear|atkt|defaulter|debar|discontinu|^f$)", re.I)
+    r"(fail|drop|withdr|detain|backlog|risk|reappear|atkt|defaulter|debar|discontinu|^f$)", re.I
+)
 _UNKNOWN = re.compile(
-    r"(enrol|ongoing|current|pending|in.?progress|awaited|running|^tbd$|^unknown$|^n/?a$)", re.I)
+    r"(enrol|ongoing|current|pending|in.?progress|awaited|running|^tbd$|^unknown$|^n/?a$)", re.I
+)
 
 MAX_CATEGORIES = 50
 MAX_TARGET_LEVELS = 10
@@ -107,8 +111,10 @@ def profile(df: pd.DataFrame) -> dict:
             entry["values"] = _value_counts(s)
         if role == "numeric":
             num = to_numeric(s)
-            entry["stats"] = {k: (None if pd.isna(v) else round(float(v), 4)) for k, v in
-                              {"min": num.min(), "median": num.median(), "max": num.max()}.items()}
+            entry["stats"] = {
+                k: (None if pd.isna(v) else round(float(v), 4))
+                for k, v in {"min": num.min(), "median": num.median(), "max": num.max()}.items()
+            }
         columns.append(entry)
 
     def target_score(c: dict) -> float:
@@ -132,8 +138,9 @@ def profile(df: pd.DataFrame) -> dict:
             else:
                 negative.append(v)
     ids = [c["name"] for c in columns if c["role"] == "id"]
-    pii_names = [c["name"] for c in columns if c["role"] == "pii" and
-                 re.search(r"name", c["name"], re.I)]
+    pii_names = [
+        c["name"] for c in columns if c["role"] == "pii" and re.search(r"name", c["name"], re.I)
+    ]
     return {
         "n_rows": len(df),
         "n_columns": df.shape[1],

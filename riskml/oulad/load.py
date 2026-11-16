@@ -79,8 +79,10 @@ def load_tables(data_dir: Path, cache_dir: Path | None = None) -> OuladTables:
             if cached.exists():
                 raw[name] = pd.read_parquet(cached)
                 continue
-            df = pd.read_csv(data_dir / filename, dtype={"code_module": "category",
-                                                          "code_presentation": "category"})
+            df = pd.read_csv(
+                data_dir / filename,
+                dtype={"code_module": "category", "code_presentation": "category"},
+            )
             cache_dir.mkdir(parents=True, exist_ok=True)
             df.to_parquet(cached, index=False)
             raw[name] = df

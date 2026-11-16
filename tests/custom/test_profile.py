@@ -22,16 +22,18 @@ def test_profile_suggests_target_on_uci(uci_df):
 
 def test_pii_and_id_columns_detected():
     n = 40
-    df = pd.DataFrame({
-        "Roll No": [f"CS{1000 + i}" for i in range(n)],
-        "Student Name": [f"Student {chr(65 + i % 26)}{i}" for i in range(n)],
-        "Email": [f"s{i}@college.edu" for i in range(n)],
-        "Mobile": [f"98{i:08d}" for i in range(n)],
-        "Attendance": [str(50 + i) + "%" for i in range(n)],
-        "Section": ["A", "B"] * (n // 2),
-        "Batch": ["2022"] * n,
-        "Result": ["Pass", "Fail"] * (n // 2),
-    })
+    df = pd.DataFrame(
+        {
+            "Roll No": [f"CS{1000 + i}" for i in range(n)],
+            "Student Name": [f"Student {chr(65 + i % 26)}{i}" for i in range(n)],
+            "Email": [f"s{i}@college.edu" for i in range(n)],
+            "Mobile": [f"98{i:08d}" for i in range(n)],
+            "Attendance": [str(50 + i) + "%" for i in range(n)],
+            "Section": ["A", "B"] * (n // 2),
+            "Batch": ["2022"] * n,
+            "Result": ["Pass", "Fail"] * (n // 2),
+        }
+    )
     roles = _roles(profile(df))
     assert roles["Roll No"] == "id"
     assert roles["Student Name"] == "pii"
@@ -47,6 +49,10 @@ def test_pii_and_id_columns_detected():
 
 
 def test_free_text_is_text_role():
-    df = pd.DataFrame({"remarks": [f"needs help with topic {i} and more" for i in range(200)],
-                       "y": ["Pass", "Fail"] * 100})
+    df = pd.DataFrame(
+        {
+            "remarks": [f"needs help with topic {i} and more" for i in range(200)],
+            "y": ["Pass", "Fail"] * 100,
+        }
+    )
     assert _roles(profile(df))["remarks"] == "text"

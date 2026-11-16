@@ -14,15 +14,34 @@ def test_no_future_information():
     base = build_features(clean_tables(raw_frames()), cutoff=30)
     frames = raw_frames()
     frames["student_vle"] = pd.concat(
-        [frames["student_vle"], pd.DataFrame([
-            {**KEY, "id_student": 1, "id_site": 12, "date": 31, "sum_click": 99},
-            {**KEY, "id_student": 3, "id_site": 11, "date": 200, "sum_click": 50},
-        ])], ignore_index=True)
+        [
+            frames["student_vle"],
+            pd.DataFrame(
+                [
+                    {**KEY, "id_student": 1, "id_site": 12, "date": 31, "sum_click": 99},
+                    {**KEY, "id_student": 3, "id_site": 11, "date": 200, "sum_click": 50},
+                ]
+            ),
+        ],
+        ignore_index=True,
+    )
     frames["student_assessment"] = pd.concat(
-        [frames["student_assessment"], pd.DataFrame([
-            {"id_assessment": 101, "id_student": 3, "date_submitted": 31, "is_banked": 0,
-             "score": "10"},
-        ])], ignore_index=True)
+        [
+            frames["student_assessment"],
+            pd.DataFrame(
+                [
+                    {
+                        "id_assessment": 101,
+                        "id_student": 3,
+                        "date_submitted": 31,
+                        "is_banked": 0,
+                        "score": "10",
+                    },
+                ]
+            ),
+        ],
+        ignore_index=True,
+    )
     future = build_features(clean_tables(frames), cutoff=30)
     pd.testing.assert_frame_equal(base.X, future.X)
     pd.testing.assert_series_equal(base.y, future.y)

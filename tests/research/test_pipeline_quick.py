@@ -9,8 +9,10 @@ from riskml.config import DEFAULT_DATA_DIR
 pytestmark = [pytest.mark.oulad, pytest.mark.slow]
 
 
-@pytest.mark.skipif(not (DEFAULT_DATA_DIR / "studentVle.csv").exists(),
-                    reason="OULAD not downloaded (run `make data`)")
+@pytest.mark.skipif(
+    not (DEFAULT_DATA_DIR / "studentVle.csv").exists(),
+    reason="OULAD not downloaded (run `make data`)",
+)
 def test_quick_pipeline_writes_consistent_outputs(tmp_path):
     from riskml.research.pipeline import run
 

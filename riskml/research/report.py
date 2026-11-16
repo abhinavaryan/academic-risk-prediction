@@ -1,6 +1,6 @@
 """Markdown results report (tables ready to paste into the project report / synopsis).
 
-    python -m riskml.research.report        # regenerate reports/results.md from web/src/generated
+python -m riskml.research.report        # regenerate reports/results.md from web/src/generated
 """
 
 from __future__ import annotations
@@ -40,8 +40,10 @@ def _table(header: list[str], rows: list[list]) -> str:
 
 def write_report(gen: Path = GENERATED_DIR, out: Path = REPORTS_DIR / "results.md") -> Path:
     load = lambda n: json.loads((gen / f"{n}.json").read_text())  # noqa: E731
-    ov, lb, tl, ab, imp, fr = (load(n) for n in ("overview", "leaderboard", "timeline",
-                                                 "ablation", "importance", "fairness"))
+    ov, lb, tl, ab, imp, fr = (
+        load(n)
+        for n in ("overview", "leaderboard", "timeline", "ablation", "importance", "fairness")
+    )
     d = ov["dataset"]
     parts = [
         "# Results — early academic-risk prediction on OULAD",
@@ -49,13 +51,16 @@ def write_report(gen: Path = GENERATED_DIR, out: Path = REPORTS_DIR / "results.m
         f"(pipeline v{ov['version']}, runtime {ov['runtime_minutes']} min). "
         "Every number below is computed from the public dataset._",
         "## Dataset",
-        _table(["Item", "Value"], [
-            ["Course registrations", f"{d['registrations']:,}"],
-            ["Unique students", f"{d['students']:,}"],
-            ["Modules / course runs", f"{d['modules']} / {d['module_presentations']}"],
-            ["VLE activity records", f"{d['vle_interactions']:,} ({d['vle_clicks']:,} clicks)"],
-            ["Assessment submissions", f"{d['assessment_submissions']:,}"],
-        ]),
+        _table(
+            ["Item", "Value"],
+            [
+                ["Course registrations", f"{d['registrations']:,}"],
+                ["Unique students", f"{d['students']:,}"],
+                ["Modules / course runs", f"{d['modules']} / {d['module_presentations']}"],
+                ["VLE activity records", f"{d['vle_interactions']:,} ({d['vle_clicks']:,} clicks)"],
+                ["Assessment submissions", f"{d['assessment_submissions']:,}"],
+            ],
+        ),
         "## Protocol",
         f"- Train: {', '.join(ov['split']['train_presentations'])} "
         f"({ov['split']['n_train']:,} registrations at day {ov['primary_cutoff']}); "
@@ -64,38 +69,91 @@ def write_report(gen: Path = GENERATED_DIR, out: Path = REPORTS_DIR / "results.m
         "ROC-AUC. Decision threshold maximises F1 on out-of-fold predictions.",
         "- 95% confidence intervals: percentile bootstrap (1,000 resamples) of the test set.",
         f"## Model leaderboard (day {lb['cutoff']})",
-        _table(["#", "Model", "CV ROC-AUC", "Test ROC-AUC [95% CI]", "F1", "Precision",
-                "Recall", "Accuracy", "MCC", "McNemar p vs best"],
-               [[m["rank"], m["name"] + (" **(deployed)**" if m["name"] == lb["deployed"] else ""),
-                 f"{_f(m['cv']['roc_auc'])} ± {_f(m['cv']['roc_auc_std'])}",
-                 _auc_ci(m),
-                 _f(m["test"]["f1"]), _pct(m["test"]["precision"]), _pct(m["test"]["recall"]),
-                 _pct(m["test"]["accuracy"]), _f(m["test"]["mcc"]),
-                 _p(m.get("mcnemar_vs_champion"))]
-                for m in sorted(lb["models"], key=lambda x: x["rank"])]),
+        _table(
+            [
+                "#",
+                "Model",
+                "CV ROC-AUC",
+                "Test ROC-AUC [95% CI]",
+                "F1",
+                "Precision",
+                "Recall",
+                "Accuracy",
+                "MCC",
+                "McNemar p vs best",
+            ],
+            [
+                [
+                    m["rank"],
+                    m["name"] + (" **(deployed)**" if m["name"] == lb["deployed"] else ""),
+                    f"{_f(m['cv']['roc_auc'])} ± {_f(m['cv']['roc_auc_std'])}",
+                    _auc_ci(m),
+                    _f(m["test"]["f1"]),
+                    _pct(m["test"]["precision"]),
+                    _pct(m["test"]["recall"]),
+                    _pct(m["test"]["accuracy"]),
+                    _f(m["test"]["mcc"]),
+                    _p(m.get("mcnemar_vs_champion")),
+                ]
+                for m in sorted(lb["models"], key=lambda x: x["rank"])
+            ],
+        ),
         f"Best by cross-validation: **{lb['champion']}**. Deployed: **{lb['deployed']}** — "
         f"{ov['deployed']['reason']}",
         "## Early-warning timeline (test ROC-AUC / F1 by prediction day)",
-        _table(["Day", "Students still enrolled", "At-risk share",
-                *[f"{m} AUC / F1" for m in tl["models"]]],
-               [[c["cutoff"], f"{c['n_test']:,}", _pct(c["at_risk_rate_test"]),
-                 *[f"{_f(c['models'][m]['roc_auc'])} / {_f(c['models'][m]['f1'])}"
-                   for m in tl["models"]]] for c in tl["cutoffs"]]),
+        _table(
+            [
+                "Day",
+                "Students still enrolled",
+                "At-risk share",
+                *[f"{m} AUC / F1" for m in tl["models"]],
+            ],
+            [
+                [
+                    c["cutoff"],
+                    f"{c['n_test']:,}",
+                    _pct(c["at_risk_rate_test"]),
+                    *[
+                        f"{_f(c['models'][m]['roc_auc'])} / {_f(c['models'][m]['f1'])}"
+                        for m in tl["models"]
+                    ],
+                ]
+                for c in tl["cutoffs"]
+            ],
+        ),
         f"## Feature-group ablation ({ab['model']})",
-        _table(["Feature set", "Features", "ROC-AUC", "F1", "Recall"],
-               [[v["variant"], v["n_features"], _f(v["roc_auc"]), _f(v["f1"]),
-                 _pct(v["recall"])] for v in ab["variants"]]),
+        _table(
+            ["Feature set", "Features", "ROC-AUC", "F1", "Recall"],
+            [
+                [v["variant"], v["n_features"], _f(v["roc_auc"]), _f(v["f1"]), _pct(v["recall"])]
+                for v in ab["variants"]
+            ],
+        ),
         "## Most important features (permutation importance, deployed model)",
-        _table(["Feature", "Drop in test ROC-AUC"],
-               [[r["label"], f"{r['mean']:.4f} ± {r['std']:.4f}"]
-                for r in imp["permutation"][:15]]),
+        _table(
+            ["Feature", "Drop in test ROC-AUC"],
+            [[r["label"], f"{r['mean']:.4f} ± {r['std']:.4f}"] for r in imp["permutation"][:15]],
+        ),
         "## Fairness audit (deployed model, test semester)",
-        _table(["Attribute", "Recall gap", "False-alarm gap", "Flag-rate gap",
-                "Recall gap without protected attributes"],
-               [[a["label"], _f(a["gaps"]["tpr_gap"]), _f(a["gaps"]["fpr_gap"]),
-                 _f(a["gaps"]["positive_rate_gap"]),
-                 _f((a.get("gaps_without_protected") or {}).get("tpr_gap"))]
-                for a in fr["attributes"]]),
+        _table(
+            [
+                "Attribute",
+                "Recall gap",
+                "False-alarm gap",
+                "Flag-rate gap",
+                "Recall gap without protected attributes",
+            ],
+            [
+                [
+                    a["label"],
+                    _f(a["gaps"]["tpr_gap"]),
+                    _f(a["gaps"]["fpr_gap"]),
+                    _f(a["gaps"]["positive_rate_gap"]),
+                    _f((a.get("gaps_without_protected") or {}).get("tpr_gap")),
+                ]
+                for a in fr["attributes"]
+            ],
+        ),
         "## Figures",
         "See `reports/figures/` (PNG, 200 dpi).",
     ]
@@ -119,26 +177,31 @@ def update_readme(gen: Path = GENERATED_DIR, readme: Path | None = None) -> Path
     by_name = {m["name"]: m for m in lb["models"]}
     top = sorted(lb["models"], key=lambda m: m["rank"])[:5]
     dep_base = tl["deployed"]
-    block = "\n\n".join([
-        README_START,
-        f"### Headline results (day {ov['primary_cutoff']}, unseen "
-        f"{ov['split']['test_presentation']} semester)",
-        f"- **{len(lb['models'])} models compared**; best by cross-validation: "
-        f"**{champ['name']}** (test ROC-AUC {_f(champ['test']['roc_auc'])}).",
-        f"- **Deployed: {dep['name']}**: ROC-AUC {_auc_ci(by_name[dep['name']])}, F1 "
-        f"{_f(dep['test']['f1'])}, recall {_pct(ew['recall'])} — it flags "
-        f"{ew['tp']:,} of the {ew['at_risk_remaining_test']:,} students who went on to fail "
-        "or withdraw.",
-        "- Early warning (deployed model, test ROC-AUC by prediction day): "
-        + ", ".join(f"day {c['cutoff']}: {_f(c['models'][dep_base]['roc_auc'])}"
-                    for c in tl["cutoffs"]) + ".",
-        _table(["Model", "CV ROC-AUC", "Test ROC-AUC [95% CI]", "Test F1"],
-               [[m["name"], _f(m["cv"]["roc_auc"]), _auc_ci(m), _f(m["test"]["f1"])]
-                for m in top]),
-        f"_Auto-generated by the pipeline on {ov['generated_at'][:10]}; full tables in "
-        "[reports/results.md](reports/results.md)._",
-        README_END,
-    ])
+    block = "\n\n".join(
+        [
+            README_START,
+            f"### Headline results (day {ov['primary_cutoff']}, unseen "
+            f"{ov['split']['test_presentation']} semester)",
+            f"- **{len(lb['models'])} models compared**; best by cross-validation: "
+            f"**{champ['name']}** (test ROC-AUC {_f(champ['test']['roc_auc'])}).",
+            f"- **Deployed: {dep['name']}**: ROC-AUC {_auc_ci(by_name[dep['name']])}, F1 "
+            f"{_f(dep['test']['f1'])}, recall {_pct(ew['recall'])} — it flags "
+            f"{ew['tp']:,} of the {ew['at_risk_remaining_test']:,} students who went on to fail "
+            "or withdraw.",
+            "- Early warning (deployed model, test ROC-AUC by prediction day): "
+            + ", ".join(
+                f"day {c['cutoff']}: {_f(c['models'][dep_base]['roc_auc'])}" for c in tl["cutoffs"]
+            )
+            + ".",
+            _table(
+                ["Model", "CV ROC-AUC", "Test ROC-AUC [95% CI]", "Test F1"],
+                [[m["name"], _f(m["cv"]["roc_auc"]), _auc_ci(m), _f(m["test"]["f1"])] for m in top],
+            ),
+            f"_Auto-generated by the pipeline on {ov['generated_at'][:10]}; full tables in "
+            "[reports/results.md](reports/results.md)._",
+            README_END,
+        ]
+    )
     text = readme.read_text()
     start, end = text.index(README_START), text.index(README_END) + len(README_END)
     readme.write_text(text[:start] + block + text[end:])

@@ -47,7 +47,10 @@ def binary_metrics(y, p, threshold: float) -> dict:
         "brier": _r(brier_score_loss(y, p)),
         "log_loss": _r(log_loss(y, p, labels=[0, 1])),
         "threshold": _r(threshold),
-        "tp": int(tp), "fp": int(fp), "tn": int(tn), "fn": int(fn),
+        "tp": int(tp),
+        "fp": int(fp),
+        "tn": int(tn),
+        "fn": int(fn),
     }
 
 
@@ -62,8 +65,9 @@ def best_f1_threshold(y, p) -> float:
 _CI_KEYS = ("accuracy", "precision", "recall", "f1", "roc_auc", "pr_auc", "mcc")
 
 
-def bootstrap_ci(y, p, threshold: float, n: int = 1000, seed: int = 42,
-                 alpha: float = 0.05) -> dict[str, tuple[float, float]]:
+def bootstrap_ci(
+    y, p, threshold: float, n: int = 1000, seed: int = 42, alpha: float = 0.05
+) -> dict[str, tuple[float, float]]:
     """Percentile bootstrap confidence intervals over the evaluation set."""
     y = np.asarray(y).astype(int)
     p = np.asarray(p, dtype=float)
@@ -77,8 +81,7 @@ def bootstrap_ci(y, p, threshold: float, n: int = 1000, seed: int = 42,
         for k in _CI_KEYS:
             samples[k].append(m[k])
     lo_q, hi_q = 100 * alpha / 2, 100 * (1 - alpha / 2)
-    return {k: (_r(np.percentile(v, lo_q)), _r(np.percentile(v, hi_q))) for k, v in
-            samples.items()}
+    return {k: (_r(np.percentile(v, lo_q)), _r(np.percentile(v, hi_q))) for k, v in samples.items()}
 
 
 def mcnemar(y, pred_a, pred_b) -> dict:
@@ -91,8 +94,12 @@ def mcnemar(y, pred_a, pred_b) -> dict:
     if b01 + b10 == 0:
         return {"statistic": 0.0, "p_value": 1.0, "a_only_correct": 0, "b_only_correct": 0}
     stat = (abs(b01 - b10) - 1) ** 2 / (b01 + b10)
-    return {"statistic": _r(stat), "p_value": float(chi2.sf(stat, 1)),
-            "a_only_correct": b01, "b_only_correct": b10}
+    return {
+        "statistic": _r(stat),
+        "p_value": float(chi2.sf(stat, 1)),
+        "a_only_correct": b01,
+        "b_only_correct": b10,
+    }
 
 
 def _downsample(points: np.ndarray, n: int) -> list[list[float]]:
@@ -113,8 +120,13 @@ def curve_points(y, p, n: int = 101) -> dict:
     for b in range(10):
         mask = which == b
         if mask.any():
-            calib.append([_r(np.mean(np.asarray(p)[mask])), _r(np.mean(np.asarray(y)[mask])),
-                          int(mask.sum())])
+            calib.append(
+                [
+                    _r(np.mean(np.asarray(p)[mask])),
+                    _r(np.mean(np.asarray(y)[mask])),
+                    int(mask.sum()),
+                ]
+            )
     return {"roc": roc, "pr": pr, "calibration": calib}
 
 

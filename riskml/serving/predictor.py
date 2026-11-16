@@ -105,8 +105,7 @@ def predict(loaded: LoadedModel, features: Mapping[str, Any]) -> Prediction:
     clean = validate_features(loaded.schema, features)
     row = {name: clean.get(name, loaded.baseline[name]) for name in loaded.feature_names}
     filled = tuple(n for n in loaded.feature_names if n not in clean)
-    differing = [n for n in loaded.feature_names
-                 if n in clean and clean[n] != loaded.baseline[n]]
+    differing = [n for n in loaded.feature_names if n in clean and clean[n] != loaded.baseline[n]]
     rows = [row] + [{**row, n: loaded.baseline[n]} for n in differing]
     probs = loaded.model.predict_proba(_frame(loaded, rows))[:, 1]
     p = float(probs[0])
@@ -114,12 +113,23 @@ def predict(loaded: LoadedModel, features: Mapping[str, Any]) -> Prediction:
     for n, p_base in zip(differing, probs[1:], strict=True):
         impact = round(p - float(p_base), 4)
         if impact != 0:
-            factors.append(Factor(
-                name=n, label=loaded.labels[n], value=row[n], baseline=loaded.baseline[n],
-                impact=impact, direction="increases" if impact > 0 else "decreases"))
+            factors.append(
+                Factor(
+                    name=n,
+                    label=loaded.labels[n],
+                    value=row[n],
+                    baseline=loaded.baseline[n],
+                    impact=impact,
+                    direction="increases" if impact > 0 else "decreases",
+                )
+            )
     factors.sort(key=lambda f: abs(f.impact), reverse=True)
     return Prediction(
-        cutoff=loaded.cutoff, probability=round(p, 4), band=band_of(p),
-        at_risk=p >= loaded.threshold, threshold=loaded.threshold,
-        factors=tuple(factors[:MAX_FACTORS]), filled_with_baseline=filled,
+        cutoff=loaded.cutoff,
+        probability=round(p, 4),
+        band=band_of(p),
+        at_risk=p >= loaded.threshold,
+        threshold=loaded.threshold,
+        factors=tuple(factors[:MAX_FACTORS]),
+        filled_with_baseline=filled,
     )

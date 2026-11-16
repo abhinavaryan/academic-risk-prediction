@@ -64,21 +64,35 @@ from riskml.oulad.load import KEYS, OuladTables, load_tables
 
 # Candidates for deployment: scikit-learn-native, compact, loadable with skops. The deployed
 # model is the candidate with the best cross-validated ROC-AUC (never chosen on the test set).
-DEPLOYABLE = ("Logistic Regression", "Gradient Boosting (HistGB)", "Random Forest", "Extra Trees",
-              "Neural Network (MLP)", "Decision Tree")
+DEPLOYABLE = (
+    "Logistic Regression",
+    "Gradient Boosting (HistGB)",
+    "Random Forest",
+    "Extra Trees",
+    "Neural Network (MLP)",
+    "Decision Tree",
+)
 TUNED = ("Gradient Boosting (HistGB)", "LightGBM", "XGBoost", "Random Forest")
-TIMELINE_MODELS = ("Logistic Regression", "Random Forest", "Gradient Boosting (HistGB)",
-                   "LightGBM")
-STACK_BASES = ("LightGBM (tuned)", "XGBoost (tuned)", "CatBoost",
-               "Gradient Boosting (HistGB) (tuned)", "Random Forest (tuned)",
-               "Logistic Regression")
+TIMELINE_MODELS = ("Logistic Regression", "Random Forest", "Gradient Boosting (HistGB)", "LightGBM")
+STACK_BASES = (
+    "LightGBM (tuned)",
+    "XGBoost (tuned)",
+    "CatBoost",
+    "Gradient Boosting (HistGB) (tuned)",
+    "Random Forest (tuned)",
+    "Logistic Regression",
+)
 PROTECTED = ["gender", "disability", "age_band", "imd_band", "region"]
 FAIRNESS_ATTRS = ["gender", "disability", "age_band", "imd_band", "highest_education"]
 OUTCOMES = ["Distinction", "Pass", "Fail", "Withdrawn"]
 HARD_BOUNDS = {
-    "assess_mean_score": (0, 100), "assess_weighted_score": (0, 100),
-    "assess_min_score": (0, 100), "assess_tma_mean": (0, 100), "assess_cma_mean": (0, 100),
-    "assess_submit_rate": (0, 1), "assess_score_rel_cohort": (-100, 100),
+    "assess_mean_score": (0, 100),
+    "assess_weighted_score": (0, 100),
+    "assess_min_score": (0, 100),
+    "assess_tma_mean": (0, 100),
+    "assess_cma_mean": (0, 100),
+    "assess_submit_rate": (0, 1),
+    "assess_score_rel_cohort": (-100, 100),
 }
 
 
@@ -98,9 +112,17 @@ class Settings:
 
     @classmethod
     def quick_mode(cls) -> Settings:
-        return cls(quick=True, n_folds=2, n_trials=0, rf_trials=0, n_bootstrap=50,
-                   perm_repeats=1, cutoffs=(0, PRIMARY_CUTOFF), samples_per_cutoff=40,
-                   timeline_models=("Logistic Regression", "Gradient Boosting (HistGB)"))
+        return cls(
+            quick=True,
+            n_folds=2,
+            n_trials=0,
+            rf_trials=0,
+            n_bootstrap=50,
+            perm_repeats=1,
+            cutoffs=(0, PRIMARY_CUTOFF),
+            samples_per_cutoff=40,
+            timeline_models=("Logistic Regression", "Gradient Boosting (HistGB)"),
+        )
 
 
 def log(msg: str) -> None:
@@ -136,14 +158,20 @@ def sha256_file(path: Path) -> str:
 def split(ff: FeatureFrame):
     test = (ff.meta["code_presentation"] == TEST_PRESENTATION).to_numpy()
     tr, te = ~test, test
-    return (ff.X[tr].reset_index(drop=True), ff.y[tr].reset_index(drop=True),
-            ff.groups[tr].reset_index(drop=True), ff.X[te].reset_index(drop=True),
-            ff.y[te].reset_index(drop=True), ff.meta[te].reset_index(drop=True))
+    return (
+        ff.X[tr].reset_index(drop=True),
+        ff.y[tr].reset_index(drop=True),
+        ff.groups[tr].reset_index(drop=True),
+        ff.X[te].reset_index(drop=True),
+        ff.y[te].reset_index(drop=True),
+        ff.meta[te].reset_index(drop=True),
+    )
 
 
 def cv_splits(X, y, groups, k: int) -> list[tuple[np.ndarray, np.ndarray]]:
-    return list(StratifiedGroupKFold(n_splits=k, shuffle=True, random_state=SEED)
-                .split(X, y, groups))
+    return list(
+        StratifiedGroupKFold(n_splits=k, shuffle=True, random_state=SEED).split(X, y, groups)
+    )
 
 
 def oof_predict(pipe, X, y, splits):
@@ -173,8 +201,20 @@ def evaluate(name: str, pipe, Xtr, ytr, Xte, yte, splits, s: Settings, *, ci: bo
         "tuned": name.endswith("(tuned)"),
         "threshold": round(thr, 4),
         "cv": {
-            **{k: cv[k] for k in ("accuracy", "precision", "recall", "f1", "roc_auc", "pr_auc",
-                                  "mcc", "balanced_accuracy", "brier")},
+            **{
+                k: cv[k]
+                for k in (
+                    "accuracy",
+                    "precision",
+                    "recall",
+                    "f1",
+                    "roc_auc",
+                    "pr_auc",
+                    "mcc",
+                    "balanced_accuracy",
+                    "brier",
+                )
+            },
             "roc_auc_std": round(float(np.std([f["roc_auc"] for f in folds])), 4),
             "f1_std": round(float(np.std([f["f1"] for f in folds])), 4),
             "folds": [{"roc_auc": f["roc_auc"], "f1": f["f1"]} for f in folds],
@@ -182,8 +222,11 @@ def evaluate(name: str, pipe, Xtr, ytr, Xte, yte, splits, s: Settings, *, ci: bo
         "test": binary_metrics(yte, p, thr),
         "test_at_0_5": binary_metrics(yte, p, 0.5),
         "ci95": bootstrap_ci(yte, p, thr, n=s.n_bootstrap, seed=SEED) if ci else None,
-        "timing": {"cv_seconds": round(cv_seconds, 2), "fit_seconds": round(fit_seconds, 2),
-                   "predict_ms_per_1k": round(predict_ms_per_1k, 3)},
+        "timing": {
+            "cv_seconds": round(cv_seconds, 2),
+            "fit_seconds": round(fit_seconds, 2),
+            "predict_ms_per_1k": round(predict_ms_per_1k, 3),
+        },
     }
     return record, model, p, oof
 
@@ -209,8 +252,10 @@ def eda(t: OuladTables) -> tuple[dict, dict]:
 
     def rate_by(col: str) -> list[dict]:
         g = info.assign(at_risk=at_risk).groupby(info[col].fillna("Unknown"))["at_risk"]
-        return [{"group": str(k), "n": int(v.size), "at_risk_rate": round(float(v.mean()), 4)}
-                for k, v in g]
+        return [
+            {"group": str(k), "n": int(v.size), "at_risk_rate": round(float(v.mean()), 4)}
+            for k, v in g
+        ]
 
     # Average weekly clicks per registered student, by final outcome.
     reg_out = info[[*KEYS, "final_result"]]
@@ -218,27 +263,45 @@ def eda(t: OuladTables) -> tuple[dict, dict]:
     clicks = weekly.groupby(["final_result", "week"])["sum_click"].sum().unstack(0).fillna(0)
     n_by_outcome = info["final_result"].value_counts()
     engagement = [
-        {"week": int(w), **{o: round(float(clicks.loc[w, o] / n_by_outcome[o]), 2)
-                            for o in OUTCOMES if o in clicks.columns}}
-        for w in clicks.index if -4 <= w <= 38
+        {
+            "week": int(w),
+            **{
+                o: round(float(clicks.loc[w, o] / n_by_outcome[o]), 2)
+                for o in OUTCOMES
+                if o in clicks.columns
+            },
+        }
+        for w in clicks.index
+        if -4 <= w <= 38
     ]
     # How quickly do withdrawals happen? cumulative share of all withdrawals by day.
     wd = t.registration.merge(info, on=KEYS)
     wd = wd.loc[wd["final_result"] == "Withdrawn", "date_unregistration"].dropna()
-    withdrawal_curve = [{"day": d, "share": round(float((wd <= d).mean()), 4)}
-                        for d in range(-60, 271, 10)]
+    withdrawal_curve = [
+        {"day": d, "share": round(float((wd <= d).mean()), 4)} for d in range(-60, 271, 10)
+    ]
     # Score distribution by outcome (non-exam assessments over the whole course).
     a = t.assessments.loc[t.assessments["assessment_type"] != "Exam", ["id_assessment"]]
     sa = t.student_assessment.merge(a, on="id_assessment").merge(
-        t.assessments[["id_assessment", "code_module", "code_presentation"]], on="id_assessment")
+        t.assessments[["id_assessment", "code_module", "code_presentation"]], on="id_assessment"
+    )
     mean_score = sa.groupby(KEYS)["score"].mean().rename("mean_score").reset_index()
     ms = mean_score.merge(reg_out, on=KEYS)
     score_box = []
     for o in OUTCOMES:
         v = ms.loc[ms["final_result"] == o, "mean_score"].dropna()
         q = np.percentile(v, [10, 25, 50, 75, 90]) if len(v) else [np.nan] * 5
-        score_box.append({"outcome": o, "n": len(v), "p10": q[0], "p25": q[1], "median": q[2],
-                          "p75": q[3], "p90": q[4]})
+        score_box.append(
+            {
+                "outcome": o,
+                "n": len(v),
+                "p10": q[0],
+                "p25": q[1],
+                "median": q[2],
+                "p75": q[3],
+                "p90": q[4],
+            }
+        )
     eda_out = {
         "outcomes": [{"outcome": o, "n": int(outcome_counts.get(o, 0))} for o in OUTCOMES],
         "at_risk_rate": round(float(at_risk.mean()), 4),
@@ -251,12 +314,20 @@ def eda(t: OuladTables) -> tuple[dict, dict]:
         "engagement_by_week": engagement,
         "withdrawal_curve": withdrawal_curve,
         "score_by_outcome": score_box,
-        "presentations": [{"code_module": r.code_module, "code_presentation": r.code_presentation,
-                           "length_days": int(r.module_presentation_length),
-                           "registrations": int(((info["code_module"] == r.code_module) &
-                                                 (info["code_presentation"] ==
-                                                  r.code_presentation)).sum())}
-                          for r in t.courses.itertuples()],
+        "presentations": [
+            {
+                "code_module": r.code_module,
+                "code_presentation": r.code_presentation,
+                "length_days": int(r.module_presentation_length),
+                "registrations": int(
+                    (
+                        (info["code_module"] == r.code_module)
+                        & (info["code_presentation"] == r.code_presentation)
+                    ).sum()
+                ),
+            }
+            for r in t.courses.itertuples()
+        ],
     }
     return dataset, eda_out
 
@@ -266,10 +337,12 @@ def quick_estimators() -> dict:
     return {
         "Baseline (majority)": DummyClassifier(strategy="prior"),
         "Logistic Regression": LogisticRegression(max_iter=2000),
-        "Random Forest": RandomForestClassifier(n_estimators=50, min_samples_leaf=2,
-                                                n_jobs=2, random_state=SEED),
-        "Gradient Boosting (HistGB)": HistGradientBoostingClassifier(max_iter=150,
-                                                                     random_state=SEED),
+        "Random Forest": RandomForestClassifier(
+            n_estimators=50, min_samples_leaf=2, n_jobs=2, random_state=SEED
+        ),
+        "Gradient Boosting (HistGB)": HistGradientBoostingClassifier(
+            max_iter=150, random_state=SEED
+        ),
     }
 
 
@@ -277,8 +350,10 @@ def primary_study(ff: FeatureFrame, s: Settings) -> dict:
     Xtr, ytr, gtr, Xte, yte, meta_te = split(ff)
     splits = cv_splits(Xtr, ytr, gtr, s.n_folds)
     num, cat = ff.numeric, ff.categorical
-    log(f"primary day {ff.cutoff}: train={len(Xtr)} test={len(Xte)} "
-        f"at-risk train={ytr.mean():.3f} test={yte.mean():.3f}")
+    log(
+        f"primary day {ff.cutoff}: train={len(Xtr)} test={len(Xte)} "
+        f"at-risk train={ytr.mean():.3f} test={yte.mean():.3f}"
+    )
 
     if s.quick:
         estimators = quick_estimators()
@@ -293,8 +368,10 @@ def primary_study(ff: FeatureFrame, s: Settings) -> dict:
         pipe = pipeline_for(name.replace(" (tuned)", ""), est, num, cat)
         rec, model, p, oof = evaluate(name, pipe, Xtr, ytr, Xte, yte, splits, s)
         records[name], models[name], test_p[name], oofs[name] = rec, model, p, oof
-        log(f"  {name:38s} cv_auc={rec['cv']['roc_auc']:.4f} test_auc={rec['test']['roc_auc']:.4f}"
-            f" test_f1={rec['test']['f1']:.4f} ({rec['timing']['cv_seconds']:.0f}s)")
+        log(
+            f"  {name:38s} cv_auc={rec['cv']['roc_auc']:.4f} test_auc={rec['test']['roc_auc']:.4f}"
+            f" test_f1={rec['test']['f1']:.4f} ({rec['timing']['cv_seconds']:.0f}s)"
+        )
 
     for name, est in estimators.items():
         add(name, est)
@@ -308,8 +385,9 @@ def primary_study(ff: FeatureFrame, s: Settings) -> dict:
         for name in TUNED:
             trials = s.rf_trials if name == "Random Forest" else s.n_trials
             log(f"  tuning {name} ({trials} Optuna trials, 3-fold grouped CV)")
-            est, params, history = tune(name, Xtr, ytr, tune_splits, num, cat, trials, SEED,
-                                        s.n_jobs)
+            est, params, history = tune(
+                name, Xtr, ytr, tune_splits, num, cat, trials, SEED, s.n_jobs
+            )
             tuning[name] = {"best_params": params, "history": history, "n_trials": trials}
             best_params[name] = params
             add(f"{name} (tuned)", est)
@@ -321,43 +399,71 @@ def primary_study(ff: FeatureFrame, s: Settings) -> dict:
         meta = LogisticRegression(max_iter=1000)
         meta_oof = np.full(len(ytr), np.nan)
         for tr, va in splits:
-            meta_oof[va] = clone(meta).fit(meta_tr[tr], ytr.iloc[tr]).predict_proba(
-                meta_tr[va])[:, 1]
+            meta_oof[va] = (
+                clone(meta).fit(meta_tr[tr], ytr.iloc[tr]).predict_proba(meta_tr[va])[:, 1]
+            )
         thr = best_f1_threshold(ytr, meta_oof)
         p = clone(meta).fit(meta_tr, ytr).predict_proba(meta_te)[:, 1]
         cv = binary_metrics(ytr, meta_oof, thr)
         folds = [binary_metrics(ytr.iloc[va], meta_oof[va], thr) for _, va in splits]
         records["Stacked Ensemble"] = {
-            "name": "Stacked Ensemble", "family": "Stacking ensemble", "tuned": False,
-            "threshold": round(thr, 4), "bases": bases,
-            "cv": {**{k: cv[k] for k in ("accuracy", "precision", "recall", "f1", "roc_auc",
-                                         "pr_auc", "mcc", "balanced_accuracy", "brier")},
-                   "roc_auc_std": round(float(np.std([f["roc_auc"] for f in folds])), 4),
-                   "f1_std": round(float(np.std([f["f1"] for f in folds])), 4),
-                   "folds": [{"roc_auc": f["roc_auc"], "f1": f["f1"]} for f in folds]},
-            "test": binary_metrics(yte, p, thr), "test_at_0_5": binary_metrics(yte, p, 0.5),
+            "name": "Stacked Ensemble",
+            "family": "Stacking ensemble",
+            "tuned": False,
+            "threshold": round(thr, 4),
+            "bases": bases,
+            "cv": {
+                **{
+                    k: cv[k]
+                    for k in (
+                        "accuracy",
+                        "precision",
+                        "recall",
+                        "f1",
+                        "roc_auc",
+                        "pr_auc",
+                        "mcc",
+                        "balanced_accuracy",
+                        "brier",
+                    )
+                },
+                "roc_auc_std": round(float(np.std([f["roc_auc"] for f in folds])), 4),
+                "f1_std": round(float(np.std([f["f1"] for f in folds])), 4),
+                "folds": [{"roc_auc": f["roc_auc"], "f1": f["f1"]} for f in folds],
+            },
+            "test": binary_metrics(yte, p, thr),
+            "test_at_0_5": binary_metrics(yte, p, 0.5),
             "ci95": bootstrap_ci(yte, p, thr, n=s.n_bootstrap, seed=SEED),
             "timing": {"cv_seconds": None, "fit_seconds": None, "predict_ms_per_1k": None},
         }
         test_p["Stacked Ensemble"] = p
-        log(f"  Stacked Ensemble cv_auc={cv['roc_auc']:.4f} "
-            f"test_auc={records['Stacked Ensemble']['test']['roc_auc']:.4f}")
+        log(
+            f"  Stacked Ensemble cv_auc={cv['roc_auc']:.4f} "
+            f"test_auc={records['Stacked Ensemble']['test']['roc_auc']:.4f}"
+        )
 
-    ranked = sorted(records.values(), key=lambda r: (r["cv"]["roc_auc"], r["cv"]["f1"]),
-                    reverse=True)
+    ranked = sorted(
+        records.values(), key=lambda r: (r["cv"]["roc_auc"], r["cv"]["f1"]), reverse=True
+    )
     champion = ranked[0]["name"]
-    deploy_name = next(r["name"] for r in ranked
-                       if r["name"].replace(" (tuned)", "") in DEPLOYABLE)
+    deploy_name = next(r["name"] for r in ranked if r["name"].replace(" (tuned)", "") in DEPLOYABLE)
     champ_pred = (test_p[champion] >= records[champion]["threshold"]).astype(int)
     for r in ranked:
         pred = (test_p[r["name"]] >= r["threshold"]).astype(int)
-        r["mcnemar_vs_champion"] = None if r["name"] == champion else mcnemar(
-            yte.to_numpy(), champ_pred, pred)
+        r["mcnemar_vs_champion"] = (
+            None if r["name"] == champion else mcnemar(yte.to_numpy(), champ_pred, pred)
+        )
         r["rank"] = ranked.index(r) + 1
     curves = {name: curve_points(yte, p) for name, p in test_p.items()}
     return {
-        "records": ranked, "champion": champion, "deployed": deploy_name, "curves": curves,
-        "models": models, "test_p": test_p, "tuning": tuning, "best_params": best_params,
+        "records": ranked,
+        "champion": champion,
+        "deployed": deploy_name,
+        "curves": curves,
+        "models": models,
+        "test_p": test_p,
+        "tuning": tuning,
+        "best_params": best_params,
         "data": (Xtr, ytr, gtr, Xte, yte, meta_te, splits),
     }
 
@@ -386,20 +492,29 @@ def timeline_estimators(best_params: dict, s: Settings, deployed: str) -> dict:
             out[name] = LogisticRegression(max_iter=2000)
         elif name == "Gradient Boosting (HistGB)":
             p = best_params.get(name)
-            out[name] = (HistGradientBoostingClassifier(**p, random_state=SEED) if p else
-                         HistGradientBoostingClassifier(max_iter=300, learning_rate=0.06,
-                                                        random_state=SEED))
+            out[name] = (
+                HistGradientBoostingClassifier(**p, random_state=SEED)
+                if p
+                else HistGradientBoostingClassifier(
+                    max_iter=300, learning_rate=0.06, random_state=SEED
+                )
+            )
         elif name == "Random Forest":
             p = best_params.get(name)
-            out[name] = (RandomForestClassifier(**p, n_jobs=s.n_jobs, random_state=SEED) if p
-                         else RandomForestClassifier(n_estimators=200, min_samples_leaf=2,
-                                                     n_jobs=s.n_jobs, random_state=SEED))
+            out[name] = (
+                RandomForestClassifier(**p, n_jobs=s.n_jobs, random_state=SEED)
+                if p
+                else RandomForestClassifier(
+                    n_estimators=200, min_samples_leaf=2, n_jobs=s.n_jobs, random_state=SEED
+                )
+            )
         elif name == "LightGBM":
             from lightgbm import LGBMClassifier  # noqa: PLC0415
 
             p = best_params.get(name, {})
-            out[name] = LGBMClassifier(**p, subsample_freq=1, random_state=SEED,
-                                       n_jobs=s.n_jobs, verbose=-1)
+            out[name] = LGBMClassifier(
+                **p, subsample_freq=1, random_state=SEED, n_jobs=s.n_jobs, verbose=-1
+            )
     return out
 
 
@@ -412,9 +527,12 @@ def feature_schema(ff: FeatureFrame, Xtr: pd.DataFrame) -> list[dict]:
         if c in ff.categorical:
             levels = sorted(Xtr[c].dropna().astype(str).unique().tolist())
             mode = Xtr[c].mode(dropna=True)
-            entry |= {"kind": "categorical", "levels": levels,
-                      "mode": str(mode.iloc[0]) if len(mode) else None,
-                      "nullable": bool(ff.X[c].isna().any())}
+            entry |= {
+                "kind": "categorical",
+                "levels": levels,
+                "mode": str(mode.iloc[0]) if len(mode) else None,
+                "nullable": bool(ff.X[c].isna().any()),
+            }
         else:
             col = ff.X[c]
             lo, hi = float(col.min()), float(col.max())
@@ -428,8 +546,12 @@ def feature_schema(ff: FeatureFrame, Xtr: pd.DataFrame) -> list[dict]:
                 "kind": "numeric",
                 "integer": bool(np.all(np.mod(col.dropna(), 1) == 0)),
                 "median": float(Xtr[c].median()) if Xtr[c].notna().any() else None,
-                "p01": float(col.quantile(0.01)), "p99": float(col.quantile(0.99)),
-                "observed_min": lo, "observed_max": hi, "min": vlo, "max": vhi,
+                "p01": float(col.quantile(0.01)),
+                "p99": float(col.quantile(0.99)),
+                "observed_min": lo,
+                "observed_max": hi,
+                "min": vlo,
+                "max": vhi,
                 "nullable": bool(col.isna().any()),
             }
         feats.append(entry)
@@ -439,9 +561,10 @@ def feature_schema(ff: FeatureFrame, Xtr: pd.DataFrame) -> list[dict]:
 def sample_students(ff: FeatureFrame, n: int) -> list[dict]:
     test = ff.meta["code_presentation"] == TEST_PRESENTATION
     meta = ff.meta[test]
-    picked = (meta.groupby("final_result", group_keys=False)
-              .apply(lambda g: g.sample(n=max(1, round(n * len(g) / len(meta))),
-                                        random_state=SEED), include_groups=False))
+    picked = meta.groupby("final_result", group_keys=False).apply(
+        lambda g: g.sample(n=max(1, round(n * len(g) / len(meta))), random_state=SEED),
+        include_groups=False,
+    )
     idx = picked.index
     out = []
     for i in idx:
@@ -455,23 +578,54 @@ def sample_students(ff: FeatureFrame, n: int) -> list[dict]:
             else:
                 feats[c] = float(v)
         m = ff.meta.loc[i]
-        out.append({"id": f"{m['code_module']}-{m['code_presentation']}-{int(m['id_student'])}",
-                    "final_result": m["final_result"], "at_risk": int(ff.y.loc[i]),
-                    "features": feats})
+        out.append(
+            {
+                "id": f"{m['code_module']}-{m['code_presentation']}-{int(m['id_student'])}",
+                "final_result": m["final_result"],
+                "at_risk": int(ff.y.loc[i]),
+                "features": feats,
+            }
+        )
     return sorted(out, key=lambda r: r["id"])
 
 
-def save_deployed(art: Path, cutoff: int, model, ff: FeatureFrame, Xtr, threshold: float,
-                  metrics: dict, n_train: int, s: Settings, deployed: str) -> list[Path]:
+def save_deployed(
+    art: Path,
+    cutoff: int,
+    model,
+    ff: FeatureFrame,
+    Xtr,
+    threshold: float,
+    metrics: dict,
+    n_train: int,
+    s: Settings,
+    deployed: str,
+) -> list[Path]:
     model_path = art / "models" / f"model_day{cutoff}.skops"
     model_path.parent.mkdir(parents=True, exist_ok=True)
     sio.dump(model, model_path)
     schema = {
-        "cutoff": cutoff, "version": __version__, "model": deployed,
-        "model_file": model_path.name, "threshold": round(threshold, 4),
+        "cutoff": cutoff,
+        "version": __version__,
+        "model": deployed,
+        "model_file": model_path.name,
+        "threshold": round(threshold, 4),
         "bands": {"moderate": BAND_MODERATE, "high": BAND_HIGH},
-        "metrics": {k: metrics[k] for k in ("roc_auc", "f1", "precision", "recall", "accuracy",
-                                            "pr_auc", "tp", "fp", "tn", "fn")},
+        "metrics": {
+            k: metrics[k]
+            for k in (
+                "roc_auc",
+                "f1",
+                "precision",
+                "recall",
+                "accuracy",
+                "pr_auc",
+                "tp",
+                "fp",
+                "tn",
+                "fn",
+            )
+        },
         "n_train": n_train,
         "test_presentation": TEST_PRESENTATION,
         "features": feature_schema(ff, Xtr),
@@ -484,13 +638,11 @@ def save_deployed(art: Path, cutoff: int, model, ff: FeatureFrame, Xtr, threshol
 
 
 # --------------------------------------------------------------------------- main study
-def cached_primary_study(ff: FeatureFrame, s: Settings, cache: Path | None,
-                         reuse: bool) -> dict:
+def cached_primary_study(ff: FeatureFrame, s: Settings, cache: Path | None, reuse: bool) -> dict:
     """Run (or reload) the expensive primary study. The cache is local-only, never deployed."""
     import pickle  # noqa: PLC0415
 
-    path = cache / f"primary_day{ff.cutoff}_{'quick' if s.quick else 'full'}.pkl" if cache \
-        else None
+    path = cache / f"primary_day{ff.cutoff}_{'quick' if s.quick else 'full'}.pkl" if cache else None
     if reuse and path is not None and path.exists():
         log(f"reusing cached primary study {path}")
         study = pickle.loads(path.read_bytes())  # noqa: S301 (our own local cache file)
@@ -504,8 +656,12 @@ def cached_primary_study(ff: FeatureFrame, s: Settings, cache: Path | None,
     return study
 
 
-def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = False,
-        reuse_primary: bool = False) -> dict:
+def run(
+    data_dir: Path = DEFAULT_DATA_DIR,
+    out_root: Path = ROOT,
+    quick: bool = False,
+    reuse_primary: bool = False,
+) -> dict:
     s = Settings.quick_mode() if quick else Settings()
     started = time.time()
     art = out_root / "artifacts"
@@ -538,67 +694,120 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
         ff = features[cutoff]
         a_Xtr, a_ytr, a_gtr, a_Xte, a_yte, _ = split(ff)
         a_splits = cv_splits(a_Xtr, a_ytr, a_gtr, s.n_folds)
-        entry = {"cutoff": cutoff, "n_train": len(a_Xtr), "n_test": len(a_Xte),
-                 "at_risk_rate_test": round(float(a_yte.mean()), 4),
-                 "at_risk_remaining_test": int(a_yte.sum()), "models": {}}
+        entry = {
+            "cutoff": cutoff,
+            "n_train": len(a_Xtr),
+            "n_test": len(a_Xte),
+            "at_risk_rate_test": round(float(a_yte.mean()), 4),
+            "at_risk_remaining_test": int(a_yte.sum()),
+            "models": {},
+        }
         for name, est in timeline_estimators(study["best_params"], s, deployed).items():
             pipe = pipeline_for(name, est, ff.numeric, ff.categorical)
-            rec, model, p, _ = evaluate(name, pipe, a_Xtr, a_ytr, a_Xte, a_yte, a_splits, s,
-                                        ci=name == deploy_base)
-            entry["models"][name] = {**{k: rec["test"][k] for k in (
-                "roc_auc", "f1", "precision", "recall", "accuracy", "pr_auc", "tp", "fp", "fn",
-                "tn")}, "threshold": rec["threshold"], "ci95": rec["ci95"]}
+            rec, model, p, _ = evaluate(
+                name, pipe, a_Xtr, a_ytr, a_Xte, a_yte, a_splits, s, ci=name == deploy_base
+            )
+            entry["models"][name] = {
+                **{
+                    k: rec["test"][k]
+                    for k in (
+                        "roc_auc",
+                        "f1",
+                        "precision",
+                        "recall",
+                        "accuracy",
+                        "pr_auc",
+                        "tp",
+                        "fp",
+                        "fn",
+                        "tn",
+                    )
+                },
+                "threshold": rec["threshold"],
+                "ci95": rec["ci95"],
+            }
             if name == deploy_base:
-                served += save_deployed(art, cutoff, model, ff, a_Xtr, rec["threshold"],
-                                        rec["test"], len(a_Xtr), s, deployed)
+                served += save_deployed(
+                    art,
+                    cutoff,
+                    model,
+                    ff,
+                    a_Xtr,
+                    rec["threshold"],
+                    rec["test"],
+                    len(a_Xtr),
+                    s,
+                    deployed,
+                )
                 if cutoff == PRIMARY_CUTOFF:
                     deployed_model, deployed_test_p = model, p
                     deployed_threshold = rec["threshold"]
         timeline.append(entry)
-        log(f"timeline day {cutoff}: " + ", ".join(
-            f"{k}={v['roc_auc']:.3f}" for k, v in entry["models"].items()))
+        log(
+            f"timeline day {cutoff}: "
+            + ", ".join(f"{k}={v['roc_auc']:.3f}" for k, v in entry["models"].items())
+        )
 
     # ---- ablation (deployed model family, feature groups)
     variants = {
         "Demographics only": FEATURE_GROUPS["demographic"],
-        "+ Course & registration": FEATURE_GROUPS["demographic"] + FEATURE_GROUPS["course"]
+        "+ Course & registration": FEATURE_GROUPS["demographic"]
+        + FEATURE_GROUPS["course"]
         + FEATURE_GROUPS["registration"],
-        "+ Assessments": FEATURE_GROUPS["demographic"] + FEATURE_GROUPS["course"]
-        + FEATURE_GROUPS["registration"] + FEATURE_GROUPS["assessment"],
+        "+ Assessments": FEATURE_GROUPS["demographic"]
+        + FEATURE_GROUPS["course"]
+        + FEATURE_GROUPS["registration"]
+        + FEATURE_GROUPS["assessment"],
         "All features (+ VLE engagement)": list(primary_ff.X.columns),
-        "All except protected attributes": [c for c in primary_ff.X.columns
-                                            if c not in PROTECTED],
+        "All except protected attributes": [c for c in primary_ff.X.columns if c not in PROTECTED],
     }
     if s.quick:
-        variants = {k: variants[k] for k in ("Demographics only",
-                                             "All features (+ VLE engagement)")}
+        variants = {
+            k: variants[k] for k in ("Demographics only", "All features (+ VLE engagement)")
+        }
     abl_splits = cv_splits(Xtr, ytr, gtr, min(3, s.n_folds))
     ablation = []
     no_protected_p = None
     for label, cols in variants.items():
         num = [c for c in primary_ff.numeric if c in cols]
         cat = [c for c in primary_ff.categorical if c in cols]
-        pipe = pipeline_for(deploy_base, deploy_estimator(deployed, study["best_params"],
-                                                           s.n_jobs), num, cat)
-        rec, _, p, _ = evaluate(label, pipe, Xtr[cols], ytr, Xte[cols], yte, abl_splits, s,
-                                ci=False)
-        ablation.append({"variant": label, "n_features": len(cols),
-                         **{k: rec["test"][k] for k in ("roc_auc", "f1", "precision", "recall",
-                                                        "accuracy")}})
+        pipe = pipeline_for(
+            deploy_base, deploy_estimator(deployed, study["best_params"], s.n_jobs), num, cat
+        )
+        rec, _, p, _ = evaluate(
+            label, pipe, Xtr[cols], ytr, Xte[cols], yte, abl_splits, s, ci=False
+        )
+        ablation.append(
+            {
+                "variant": label,
+                "n_features": len(cols),
+                **{k: rec["test"][k] for k in ("roc_auc", "f1", "precision", "recall", "accuracy")},
+            }
+        )
         if label == "All except protected attributes":
             no_protected_p, no_protected_thr = p, rec["threshold"]
         log(f"ablation {label}: auc={rec['test']['roc_auc']:.4f}")
 
     # ---- importance
     log("permutation importance (deployed model, test set)")
-    perm = permutation_importance(deployed_model, Xte, yte, scoring="roc_auc",
-                                  n_repeats=s.perm_repeats, random_state=SEED)
+    perm = permutation_importance(
+        deployed_model, Xte, yte, scoring="roc_auc", n_repeats=s.perm_repeats, random_state=SEED
+    )
     perm_rows = sorted(
-        [{"feature": c, "label": FEATURE_LABELS.get(c, c), "mean": round(float(m), 5),
-          "std": round(float(sd), 5)}
-         for c, m, sd in zip(Xte.columns, perm.importances_mean, perm.importances_std,
-                             strict=True)],
-        key=lambda r: r["mean"], reverse=True)
+        [
+            {
+                "feature": c,
+                "label": FEATURE_LABELS.get(c, c),
+                "mean": round(float(m), 5),
+                "std": round(float(sd), 5),
+            }
+            for c, m, sd in zip(
+                Xte.columns, perm.importances_mean, perm.importances_std, strict=True
+            )
+        ],
+        key=lambda r: r["mean"],
+        reverse=True,
+    )
     shap = None
     if "LightGBM (tuned)" in study["models"]:
         from riskml.research.explain import lgbm_shap  # noqa: PLC0415
@@ -611,8 +820,12 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
     fairness = {"threshold": deployed_threshold, "attributes": []}
     for attr in FAIRNESS_ATTRS:
         rows = group_fairness(yte, deployed_test_p, deployed_threshold, Xte[attr])
-        entry = {"attribute": attr, "label": FEATURE_LABELS[attr], "groups": rows,
-                 "gaps": fairness_gaps(rows)}
+        entry = {
+            "attribute": attr,
+            "label": FEATURE_LABELS[attr],
+            "groups": rows,
+            "gaps": fairness_gaps(rows),
+        }
         if no_protected_p is not None:
             rows_np = group_fairness(yte, no_protected_p, no_protected_thr, Xte[attr])
             entry["gaps_without_protected"] = fairness_gaps(rows_np)
@@ -622,9 +835,12 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
     manifest = {
         "version": __version__,
         "created_at": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
-        "sklearn": sklearn.__version__, "skops": skops.__version__,
-        "data_sha256": OULAD_SHA256, "cutoffs": list(s.cutoffs),
-        "primary_cutoff": PRIMARY_CUTOFF, "quick": s.quick,
+        "sklearn": sklearn.__version__,
+        "skops": skops.__version__,
+        "data_sha256": OULAD_SHA256,
+        "cutoffs": list(s.cutoffs),
+        "primary_cutoff": PRIMARY_CUTOFF,
+        "quick": s.quick,
         "files": {str(p.relative_to(art)): sha256_file(p) for p in sorted(served)},
     }
     write_json(art / "manifest.json", manifest)
@@ -633,42 +849,74 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
     champ_rec = by_name[study["champion"]]
     primary_timeline = next(e for e in timeline if e["cutoff"] == PRIMARY_CUTOFF)
     overview = {
-        "generated_at": manifest["created_at"], "version": __version__, "quick": s.quick,
+        "generated_at": manifest["created_at"],
+        "version": __version__,
+        "quick": s.quick,
         "runtime_minutes": round((time.time() - started) / 60, 1),
         "dataset": dataset,
-        "split": {"train_presentations": sorted(set(primary_ff.meta["code_presentation"])
-                                                - {TEST_PRESENTATION}),
-                  "test_presentation": TEST_PRESENTATION, "n_train": len(Xtr),
-                  "n_test": len(Xte), "cv_folds": s.n_folds,
-                  "cv": "StratifiedGroupKFold grouped by student"},
+        "split": {
+            "train_presentations": sorted(
+                set(primary_ff.meta["code_presentation"]) - {TEST_PRESENTATION}
+            ),
+            "test_presentation": TEST_PRESENTATION,
+            "n_train": len(Xtr),
+            "n_test": len(Xte),
+            "cv_folds": s.n_folds,
+            "cv": "StratifiedGroupKFold grouped by student",
+        },
         "primary_cutoff": PRIMARY_CUTOFF,
         "cutoffs": list(s.cutoffs),
         "n_models": len(study["records"]),
         "n_features": primary_ff.X.shape[1],
-        "champion": {"name": champ_rec["name"], "test": champ_rec["test"],
-                     "cv_roc_auc": champ_rec["cv"]["roc_auc"], "ci95": champ_rec["ci95"]},
-        "deployed": {"name": deployed_rec["name"], "test": deployed_rec["test"],
-                     "cv_roc_auc": deployed_rec["cv"]["roc_auc"], "ci95": deployed_rec["ci95"],
-                     "reason": "Highest cross-validated ROC-AUC among scikit-learn-native "
-                               "models, which run on the serverless runtime without extra "
-                               "native libraries and load securely with skops."},
-        "early_warning": {"cutoff": PRIMARY_CUTOFF,
-                          **primary_timeline["models"][deploy_base],
-                          "at_risk_remaining_test": primary_timeline["at_risk_remaining_test"]},
+        "champion": {
+            "name": champ_rec["name"],
+            "test": champ_rec["test"],
+            "cv_roc_auc": champ_rec["cv"]["roc_auc"],
+            "ci95": champ_rec["ci95"],
+        },
+        "deployed": {
+            "name": deployed_rec["name"],
+            "test": deployed_rec["test"],
+            "cv_roc_auc": deployed_rec["cv"]["roc_auc"],
+            "ci95": deployed_rec["ci95"],
+            "reason": "Highest cross-validated ROC-AUC among scikit-learn-native "
+            "models, which run on the serverless runtime without extra "
+            "native libraries and load securely with skops.",
+        },
+        "early_warning": {
+            "cutoff": PRIMARY_CUTOFF,
+            **primary_timeline["models"][deploy_base],
+            "at_risk_remaining_test": primary_timeline["at_risk_remaining_test"],
+        },
         "notes": s.notes,
     }
     write_json(gen / "overview.json", overview)
     write_json(gen / "eda.json", eda_out)
-    write_json(gen / "leaderboard.json", {
-        "cutoff": PRIMARY_CUTOFF, "champion": study["champion"], "deployed": study["deployed"],
-        "selection_metric": "cv.roc_auc", "models": study["records"],
-        "tuning": study["tuning"]})
+    write_json(
+        gen / "leaderboard.json",
+        {
+            "cutoff": PRIMARY_CUTOFF,
+            "champion": study["champion"],
+            "deployed": study["deployed"],
+            "selection_metric": "cv.roc_auc",
+            "models": study["records"],
+            "tuning": study["tuning"],
+        },
+    )
     write_json(gen / "curves.json", study["curves"])
-    write_json(gen / "timeline.json", {"models": list(s.timeline_models),
-                                       "deployed": deploy_base, "cutoffs": timeline})
+    write_json(
+        gen / "timeline.json",
+        {"models": list(s.timeline_models), "deployed": deploy_base, "cutoffs": timeline},
+    )
     write_json(gen / "ablation.json", {"model": deployed, "variants": ablation})
-    write_json(gen / "importance.json", {"permutation": perm_rows, "shap": shap,
-                                         "shap_model": "LightGBM (tuned)" if shap else None})
+    write_json(
+        gen / "importance.json",
+        {
+            "permutation": perm_rows,
+            "shap": shap,
+            "shap_model": "LightGBM (tuned)" if shap else None,
+        },
+    )
     write_json(gen / "fairness.json", fairness)
 
     if not s.quick:
@@ -683,20 +931,26 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
 
                 update_readme(gen, out_root / "README.md")
         except Exception as exc:  # figures are regenerable from the JSON; never lose a run
-            log(f"figure/report generation failed ({exc!r}); rerun `python -m "
-                "riskml.research.figures`")
+            log(
+                f"figure/report generation failed ({exc!r}); rerun `python -m "
+                "riskml.research.figures`"
+            )
     log(f"done in {(time.time() - started) / 60:.1f} min")
     return overview
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
     parser.add_argument("--out-root", type=Path, default=ROOT)
     parser.add_argument("--quick", action="store_true")
-    parser.add_argument("--reuse-primary", action="store_true",
-                        help="reload the cached day-60 study instead of re-training it")
+    parser.add_argument(
+        "--reuse-primary",
+        action="store_true",
+        help="reload the cached day-60 study instead of re-training it",
+    )
     args = parser.parse_args()
     run(args.data_dir, args.out_root, args.quick, args.reuse_primary)
 

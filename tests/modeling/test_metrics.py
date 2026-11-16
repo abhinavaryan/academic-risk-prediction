@@ -26,8 +26,23 @@ def test_perfect_predictions_metrics():
 
 def test_metrics_keys_complete():
     m = binary_metrics(Y, np.linspace(0.1, 0.9, 8), 0.5)
-    expected = {"accuracy", "precision", "recall", "f1", "roc_auc", "pr_auc", "mcc",
-                "balanced_accuracy", "brier", "log_loss", "threshold", "tp", "fp", "tn", "fn"}
+    expected = {
+        "accuracy",
+        "precision",
+        "recall",
+        "f1",
+        "roc_auc",
+        "pr_auc",
+        "mcc",
+        "balanced_accuracy",
+        "brier",
+        "log_loss",
+        "threshold",
+        "tp",
+        "fp",
+        "tn",
+        "fn",
+    }
     assert set(m) == expected
 
 

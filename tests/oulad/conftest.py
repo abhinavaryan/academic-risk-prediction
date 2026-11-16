@@ -17,18 +17,45 @@ def raw_frames() -> dict[str, pd.DataFrame]:
     courses = pd.DataFrame([{**KEY, "module_presentation_length": 268}])
     info = pd.DataFrame(
         [
-            {**KEY, "id_student": 1, "gender": "M", "region": "Scotland",
-             "highest_education": "HE Qualification", "imd_band": "10-20", "age_band": "0-35",
-             "num_of_prev_attempts": 0, "studied_credits": 60, "disability": "N",
-             "final_result": "Pass"},
-            {**KEY, "id_student": 2, "gender": "F", "region": "Wales",
-             "highest_education": "A Level or Equivalent", "imd_band": "?", "age_band": "35-55",
-             "num_of_prev_attempts": 1, "studied_credits": 120, "disability": "Y",
-             "final_result": "Withdrawn"},
-            {**KEY, "id_student": 3, "gender": "F", "region": "Wales",
-             "highest_education": "Lower Than A Level", "imd_band": "0-10%", "age_band": "0-35",
-             "num_of_prev_attempts": 0, "studied_credits": 60, "disability": "N",
-             "final_result": "Fail"},
+            {
+                **KEY,
+                "id_student": 1,
+                "gender": "M",
+                "region": "Scotland",
+                "highest_education": "HE Qualification",
+                "imd_band": "10-20",
+                "age_band": "0-35",
+                "num_of_prev_attempts": 0,
+                "studied_credits": 60,
+                "disability": "N",
+                "final_result": "Pass",
+            },
+            {
+                **KEY,
+                "id_student": 2,
+                "gender": "F",
+                "region": "Wales",
+                "highest_education": "A Level or Equivalent",
+                "imd_band": "?",
+                "age_band": "35-55",
+                "num_of_prev_attempts": 1,
+                "studied_credits": 120,
+                "disability": "Y",
+                "final_result": "Withdrawn",
+            },
+            {
+                **KEY,
+                "id_student": 3,
+                "gender": "F",
+                "region": "Wales",
+                "highest_education": "Lower Than A Level",
+                "imd_band": "0-10%",
+                "age_band": "0-35",
+                "num_of_prev_attempts": 0,
+                "studied_credits": 60,
+                "disability": "N",
+                "final_result": "Fail",
+            },
         ]
     )
     registration = pd.DataFrame(
@@ -47,12 +74,27 @@ def raw_frames() -> dict[str, pd.DataFrame]:
     )
     student_assessment = pd.DataFrame(
         [
-            {"id_assessment": 101, "id_student": 1, "date_submitted": 18, "is_banked": 0,
-             "score": "80"},
-            {"id_assessment": 102, "id_student": 1, "date_submitted": 49, "is_banked": 0,
-             "score": "70"},
-            {"id_assessment": 102, "id_student": 3, "date_submitted": 55, "is_banked": 0,
-             "score": "30"},
+            {
+                "id_assessment": 101,
+                "id_student": 1,
+                "date_submitted": 18,
+                "is_banked": 0,
+                "score": "80",
+            },
+            {
+                "id_assessment": 102,
+                "id_student": 1,
+                "date_submitted": 49,
+                "is_banked": 0,
+                "score": "70",
+            },
+            {
+                "id_assessment": 102,
+                "id_student": 3,
+                "date_submitted": 55,
+                "is_banked": 0,
+                "score": "30",
+            },
         ]
     )
     vle = pd.DataFrame(
@@ -71,9 +113,13 @@ def raw_frames() -> dict[str, pd.DataFrame]:
         ]
     )
     return {
-        "courses": courses, "info": info, "registration": registration,
-        "assessments": assessments, "student_assessment": student_assessment,
-        "vle": vle, "student_vle": student_vle,
+        "courses": courses,
+        "info": info,
+        "registration": registration,
+        "assessments": assessments,
+        "student_assessment": student_assessment,
+        "vle": vle,
+        "student_vle": student_vle,
     }
 
 

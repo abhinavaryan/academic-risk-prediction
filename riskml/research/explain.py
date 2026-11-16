@@ -17,8 +17,14 @@ def raw_feature_of(transformed: str, categorical: list[str]) -> str:
     return rest
 
 
-def lgbm_shap(pipeline, X: pd.DataFrame, categorical: list[str], top: int = 12,
-              n_points: int = 400, seed: int = 42) -> dict:
+def lgbm_shap(
+    pipeline,
+    X: pd.DataFrame,
+    categorical: list[str],
+    top: int = 12,
+    n_points: int = 400,
+    seed: int = 42,
+) -> dict:
     """Native TreeSHAP of a fitted Pipeline(prep, LGBMClassifier), aggregated to raw features."""
     prep, model = pipeline.named_steps["prep"], pipeline.named_steps["model"]
     Z = prep.transform(X)
@@ -37,12 +43,18 @@ def lgbm_shap(pipeline, X: pd.DataFrame, categorical: list[str], top: int = 12,
             pct = codes.rank(pct=True)
         else:
             pct = col.rank(pct=True)
-        beeswarm.append({
-            "feature": feat,
-            "points": [[round(float(frame[feat].iloc[i]), 4),
-                        None if np.isnan(pct.iloc[i]) else round(float(pct.iloc[i]), 3)]
-                       for i in idx],
-        })
+        beeswarm.append(
+            {
+                "feature": feat,
+                "points": [
+                    [
+                        round(float(frame[feat].iloc[i]), 4),
+                        None if np.isnan(pct.iloc[i]) else round(float(pct.iloc[i]), 3),
+                    ]
+                    for i in idx
+                ],
+            }
+        )
     return {
         "mean_abs": [{"feature": f, "value": round(float(v), 5)} for f, v in mean_abs.items()],
         "beeswarm": beeswarm,

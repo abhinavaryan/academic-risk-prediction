@@ -37,7 +37,9 @@ def _lgbm(trial, seed, n_jobs):
         subsample_freq=1,
         colsample_bytree=trial.suggest_float("colsample_bytree", 0.5, 1.0),
         reg_lambda=trial.suggest_float("reg_lambda", 1e-3, 10, log=True),
-        random_state=seed, n_jobs=n_jobs, verbose=-1,
+        random_state=seed,
+        n_jobs=n_jobs,
+        verbose=-1,
     )
 
 
@@ -52,7 +54,10 @@ def _xgb(trial, seed, n_jobs):
         subsample=trial.suggest_float("subsample", 0.6, 1.0),
         colsample_bytree=trial.suggest_float("colsample_bytree", 0.5, 1.0),
         reg_lambda=trial.suggest_float("reg_lambda", 1e-3, 10, log=True),
-        tree_method="hist", eval_metric="logloss", random_state=seed, n_jobs=n_jobs,
+        tree_method="hist",
+        eval_metric="logloss",
+        random_state=seed,
+        n_jobs=n_jobs,
     )
 
 
@@ -62,7 +67,8 @@ def _rf(trial, seed, n_jobs):
         max_depth=trial.suggest_int("max_depth", 6, 30),
         min_samples_leaf=trial.suggest_int("min_samples_leaf", 1, 20),
         max_features=trial.suggest_categorical("max_features", ["sqrt", 0.3, 0.5]),
-        n_jobs=n_jobs, random_state=seed,
+        n_jobs=n_jobs,
+        random_state=seed,
     )
 
 
@@ -86,8 +92,7 @@ def tune(name, X, y, splits, numeric, categorical, n_trials, seed, n_jobs=4):
             scores.append(roc_auc_score(y.iloc[va], model.predict_proba(X.iloc[va])[:, 1]))
         return float(np.mean(scores))
 
-    study = optuna.create_study(direction="maximize",
-                                sampler=optuna.samplers.TPESampler(seed=seed))
+    study = optuna.create_study(direction="maximize", sampler=optuna.samplers.TPESampler(seed=seed))
     study.optimize(objective, n_trials=n_trials)
     best = -np.inf
     history = []

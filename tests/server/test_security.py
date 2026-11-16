@@ -62,9 +62,11 @@ def test_busy_returns_503(make_client):
     slots = c.app.state.training_slots
     assert slots.acquire(blocking=False)
     try:
-        r = c.post("/api/custom/train",
-                   files={"file": ("a.csv", b"a,y\n1,Fail\n", "text/csv")},
-                   data={"config": '{"target": "y", "positive_values": ["Fail"]}'})
+        r = c.post(
+            "/api/custom/train",
+            files={"file": ("a.csv", b"a,y\n1,Fail\n", "text/csv")},
+            data={"config": '{"target": "y", "positive_values": ["Fail"]}'},
+        )
         assert r.status_code == 503
         assert r.headers["retry-after"]
     finally:
@@ -73,23 +75,31 @@ def test_busy_returns_503(make_client):
 
 @pytest.mark.parametrize("config", ["not json", '{"target": 5}', '{"target": "y", "evil": 1}'])
 def test_bad_config_rejected(client, config):
-    r = client.post("/api/custom/train", files={"file": ("a.csv", b"a,y\n1,Fail\n", "text/csv")},
-                    data={"config": config})
+    r = client.post(
+        "/api/custom/train",
+        files={"file": ("a.csv", b"a,y\n1,Fail\n", "text/csv")},
+        data={"config": config},
+    )
     assert r.status_code == 422
 
 
 def test_unreadable_upload_400(client):
-    r = client.post("/api/custom/profile",
-                    files={"file": ("x.csv", bytes(range(256)) * 20, "text/csv")})
+    r = client.post(
+        "/api/custom/profile", files={"file": ("x.csv", bytes(range(256)) * 20, "text/csv")}
+    )
     assert r.status_code == 400
     assert r.json()["error"]["code"] == "unreadable"
 
 
 def test_cors_only_for_allowed_origins(make_client):
     c = make_client(cors_origins=["https://good.example"])
-    ok = c.options("/api/health", headers={"origin": "https://good.example",
-                                           "access-control-request-method": "GET"})
-    bad = c.options("/api/health", headers={"origin": "https://evil.example",
-                                            "access-control-request-method": "GET"})
+    ok = c.options(
+        "/api/health",
+        headers={"origin": "https://good.example", "access-control-request-method": "GET"},
+    )
+    bad = c.options(
+        "/api/health",
+        headers={"origin": "https://evil.example", "access-control-request-method": "GET"},
+    )
     assert ok.headers.get("access-control-allow-origin") == "https://good.example"
     assert "access-control-allow-origin" not in bad.headers

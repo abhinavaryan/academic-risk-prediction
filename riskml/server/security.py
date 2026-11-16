@@ -14,12 +14,16 @@ logger = logging.getLogger("agrim")
 _RID = re.compile(r"^[A-Za-z0-9-]{8,64}$")
 
 CSP_API = "default-src 'none'; frame-ancestors 'none'"
-CSP_DOCS = ("default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
-            "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: "
-            "https://fastapi.tiangolo.com; connect-src 'self'; frame-ancestors 'none'")
-CSP_SITE = ("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' "
-            "'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; "
-            "connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'")
+CSP_DOCS = (
+    "default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: "
+    "https://fastapi.tiangolo.com; connect-src 'self'; frame-ancestors 'none'"
+)
+CSP_SITE = (
+    "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' "
+    "'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; "
+    "connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+)
 
 
 def _header(scope, name: bytes) -> str | None:
@@ -78,16 +82,35 @@ class SecurityMiddleware:
             # never expose a traceback.
             logger.exception("unhandled error request_id=%s", rid)
             if status["code"] == 0:
-                body = json.dumps({"error": {"code": "internal_error", "request_id": rid,
-                                             "message": "Something went wrong on our side."}})
-                await send_wrapper({"type": "http.response.start", "status": 500,
-                                    "headers": [(b"content-type", b"application/json")]})
+                body = json.dumps(
+                    {
+                        "error": {
+                            "code": "internal_error",
+                            "request_id": rid,
+                            "message": "Something went wrong on our side.",
+                        }
+                    }
+                )
+                await send_wrapper(
+                    {
+                        "type": "http.response.start",
+                        "status": 500,
+                        "headers": [(b"content-type", b"application/json")],
+                    }
+                )
                 await send_wrapper({"type": "http.response.body", "body": body.encode()})
         finally:
-            logger.info(json.dumps({
-                "request_id": rid, "method": scope.get("method"), "path": path,
-                "status": status["code"],
-                "ms": round((time.perf_counter() - started) * 1000, 1)}))
+            logger.info(
+                json.dumps(
+                    {
+                        "request_id": rid,
+                        "method": scope.get("method"),
+                        "path": path,
+                        "status": status["code"],
+                        "ms": round((time.perf_counter() - started) * 1000, 1),
+                    }
+                )
+            )
 
 
 class _TooLarge(Exception):
@@ -102,11 +125,24 @@ class BodySizeLimitMiddleware:
         self.max_bytes = max_bytes
 
     async def _reject(self, send):
-        body = json.dumps({"error": {"code": "too_large", "message":
-                                     "The upload is larger than the allowed size."}}).encode()
-        await send({"type": "http.response.start", "status": 413,
-                    "headers": [(b"content-type", b"application/json"),
-                                (b"content-length", str(len(body)).encode())]})
+        body = json.dumps(
+            {
+                "error": {
+                    "code": "too_large",
+                    "message": "The upload is larger than the allowed size.",
+                }
+            }
+        ).encode()
+        await send(
+            {
+                "type": "http.response.start",
+                "status": 413,
+                "headers": [
+                    (b"content-type", b"application/json"),
+                    (b"content-length", str(len(body)).encode()),
+                ],
+            }
+        )
         await send({"type": "http.response.body", "body": body})
 
     async def __call__(self, scope, receive, send):

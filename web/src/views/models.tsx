@@ -288,7 +288,7 @@ export function ModelsView() {
           </SectionHeading>
           <div className="grid gap-4 lg:grid-cols-2">
             {fairness.attributes.map((a) => (
-              <Card key={a.attribute}>
+              <Card key={a.attribute} className="min-w-0">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h3 className="font-semibold text-ink">{a.label}</h3>
                   <p className="text-xs text-ink-2">

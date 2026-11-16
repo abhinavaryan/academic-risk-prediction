@@ -61,21 +61,32 @@ SERVING_MODELS = (
 )
 
 # Models that need scaled inputs; tree ensembles do not.
-_SCALED = {"Logistic Regression", "Naive Bayes", "k-Nearest Neighbours", "Linear SVM",
-           "Neural Network (MLP)"}
+_SCALED = {
+    "Logistic Regression",
+    "Naive Bayes",
+    "k-Nearest Neighbours",
+    "Linear SVM",
+    "Neural Network (MLP)",
+}
 
 
 def make_preprocessor(numeric: list[str], categorical: list[str], scale: bool) -> ColumnTransformer:
-    num_steps: list = [(
-        "impute", SimpleImputer(strategy="median", add_indicator=True, keep_empty_features=True)
-    )]
+    num_steps: list = [
+        ("impute", SimpleImputer(strategy="median", add_indicator=True, keep_empty_features=True))
+    ]
     if scale:
         num_steps.append(("scale", StandardScaler()))
-    cat = Pipeline([
-        ("impute", SimpleImputer(strategy="constant", fill_value="Missing")),
-        ("onehot", OneHotEncoder(handle_unknown="infrequent_if_exist", min_frequency=0.01,
-                                 sparse_output=False)),
-    ])
+    cat = Pipeline(
+        [
+            ("impute", SimpleImputer(strategy="constant", fill_value="Missing")),
+            (
+                "onehot",
+                OneHotEncoder(
+                    handle_unknown="infrequent_if_exist", min_frequency=0.01, sparse_output=False
+                ),
+            ),
+        ]
+    )
     transformers = []
     if numeric:
         transformers.append(("num", Pipeline(num_steps), list(numeric)))
@@ -85,10 +96,12 @@ def make_preprocessor(numeric: list[str], categorical: list[str], scale: bool) -
 
 
 def _pipe(name: str, estimator, numeric, categorical) -> Pipeline:
-    return Pipeline([
-        ("prep", make_preprocessor(numeric, categorical, scale=name in _SCALED)),
-        ("model", estimator),
-    ])
+    return Pipeline(
+        [
+            ("prep", make_preprocessor(numeric, categorical, scale=name in _SCALED)),
+            ("model", estimator),
+        ]
+    )
 
 
 def _knn_k(n_samples: int | None) -> int:
@@ -100,25 +113,39 @@ def _knn_k(n_samples: int | None) -> int:
 def _sklearn_estimators(seed: int, n_jobs: int, n_samples: int | None) -> dict:
     return {
         "Logistic Regression": LogisticRegression(max_iter=2000, C=1.0),
-        "Decision Tree": DecisionTreeClassifier(max_depth=8, min_samples_leaf=20,
-                                                random_state=seed),
-        "Random Forest": RandomForestClassifier(n_estimators=300, min_samples_leaf=2,
-                                                n_jobs=n_jobs, random_state=seed),
-        "Extra Trees": ExtraTreesClassifier(n_estimators=300, min_samples_leaf=2,
-                                            n_jobs=n_jobs, random_state=seed),
+        "Decision Tree": DecisionTreeClassifier(
+            max_depth=8, min_samples_leaf=20, random_state=seed
+        ),
+        "Random Forest": RandomForestClassifier(
+            n_estimators=300, min_samples_leaf=2, n_jobs=n_jobs, random_state=seed
+        ),
+        "Extra Trees": ExtraTreesClassifier(
+            n_estimators=300, min_samples_leaf=2, n_jobs=n_jobs, random_state=seed
+        ),
         "Gradient Boosting (HistGB)": HistGradientBoostingClassifier(
-            max_iter=300, learning_rate=0.06, random_state=seed),
-        "k-Nearest Neighbours": KNeighborsClassifier(n_neighbors=_knn_k(n_samples),
-                                                     weights="distance", n_jobs=n_jobs),
+            max_iter=300, learning_rate=0.06, random_state=seed
+        ),
+        "k-Nearest Neighbours": KNeighborsClassifier(
+            n_neighbors=_knn_k(n_samples), weights="distance", n_jobs=n_jobs
+        ),
         "Naive Bayes": GaussianNB(),
-        "Neural Network (MLP)": MLPClassifier(hidden_layer_sizes=(64, 32), alpha=1e-3,
-                                              early_stopping=True, max_iter=300,
-                                              random_state=seed),
+        "Neural Network (MLP)": MLPClassifier(
+            hidden_layer_sizes=(64, 32),
+            alpha=1e-3,
+            early_stopping=True,
+            max_iter=300,
+            random_state=seed,
+        ),
     }
 
 
-def serving_zoo(numeric: list[str], categorical: list[str], seed: int, n_jobs: int = 2,
-                n_samples: int | None = None) -> dict[str, Pipeline]:
+def serving_zoo(
+    numeric: list[str],
+    categorical: list[str],
+    seed: int,
+    n_jobs: int = 2,
+    n_samples: int | None = None,
+) -> dict[str, Pipeline]:
     est = _sklearn_estimators(seed, n_jobs, n_samples)
     return {name: _pipe(name, est[name], numeric, categorical) for name in SERVING_MODELS}
 
@@ -140,24 +167,50 @@ def research_estimators(seed: int, n_jobs: int = 4) -> dict:
         "Extra Trees": est["Extra Trees"],
         "AdaBoost": AdaBoostClassifier(n_estimators=200, learning_rate=0.5, random_state=seed),
         "Gradient Boosting (HistGB)": est["Gradient Boosting (HistGB)"],
-        "Linear SVM": CalibratedClassifierCV(LinearSVC(C=0.5, max_iter=5000, random_state=seed),
-                                             cv=3),
+        "Linear SVM": CalibratedClassifierCV(
+            LinearSVC(C=0.5, max_iter=5000, random_state=seed), cv=3
+        ),
         "Neural Network (MLP)": est["Neural Network (MLP)"],
-        "LightGBM": LGBMClassifier(n_estimators=400, learning_rate=0.05, num_leaves=31,
-                                   subsample=0.8, subsample_freq=1, colsample_bytree=0.8,
-                                   random_state=seed, n_jobs=n_jobs, verbose=-1),
-        "XGBoost": XGBClassifier(n_estimators=400, learning_rate=0.05, max_depth=6,
-                                 subsample=0.8, colsample_bytree=0.8, tree_method="hist",
-                                 eval_metric="logloss", random_state=seed, n_jobs=n_jobs),
-        "CatBoost": CatBoostClassifier(iterations=600, learning_rate=0.05, depth=6, verbose=0,
-                                       random_seed=seed, thread_count=n_jobs),
+        "LightGBM": LGBMClassifier(
+            n_estimators=400,
+            learning_rate=0.05,
+            num_leaves=31,
+            subsample=0.8,
+            subsample_freq=1,
+            colsample_bytree=0.8,
+            random_state=seed,
+            n_jobs=n_jobs,
+            verbose=-1,
+        ),
+        "XGBoost": XGBClassifier(
+            n_estimators=400,
+            learning_rate=0.05,
+            max_depth=6,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            tree_method="hist",
+            eval_metric="logloss",
+            random_state=seed,
+            n_jobs=n_jobs,
+        ),
+        "CatBoost": CatBoostClassifier(
+            iterations=600,
+            learning_rate=0.05,
+            depth=6,
+            verbose=0,
+            random_seed=seed,
+            thread_count=n_jobs,
+        ),
     }
 
 
-def research_zoo(numeric: list[str], categorical: list[str], seed: int,
-                 n_jobs: int = 4) -> dict[str, Pipeline]:
-    return {name: _pipe(name, est, numeric, categorical)
-            for name, est in research_estimators(seed, n_jobs).items()}
+def research_zoo(
+    numeric: list[str], categorical: list[str], seed: int, n_jobs: int = 4
+) -> dict[str, Pipeline]:
+    return {
+        name: _pipe(name, est, numeric, categorical)
+        for name, est in research_estimators(seed, n_jobs).items()
+    }
 
 
 def pipeline_for(name: str, estimator, numeric: list[str], categorical: list[str]) -> Pipeline:

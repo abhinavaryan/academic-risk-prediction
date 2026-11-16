@@ -4,8 +4,12 @@ import pytest
 
 from riskml.custom.trainer import TrainConfig, TrainingError, train_custom
 
-UCI_CFG = TrainConfig(target="Target", positive_values=["Dropout"],
-                      negative_values=["Graduate"], unknown_values=["Enrolled"])
+UCI_CFG = TrainConfig(
+    target="Target",
+    positive_values=["Dropout"],
+    negative_values=["Graduate"],
+    unknown_values=["Enrolled"],
+)
 
 
 @pytest.fixture(scope="module")
@@ -76,14 +80,19 @@ def test_unknown_target_column(uci_df):
 
 def test_deterministic(uci_df):
     df = uci_df.sample(600, random_state=1).reset_index(drop=True)
-    cfg = TrainConfig(target="Target", positive_values=["Dropout"], unknown_values=["Enrolled"],
-                      models=["Logistic Regression", "Random Forest"])
+    cfg = TrainConfig(
+        target="Target",
+        positive_values=["Dropout"],
+        unknown_values=["Enrolled"],
+        models=["Logistic Regression", "Random Forest"],
+    )
     a = train_custom(df, cfg)
     b = train_custom(df, cfg)
     untimed = lambda r: [{k: v for k, v in m.items() if k != "seconds"} for m in r["leaderboard"]]  # noqa: E731
     assert untimed(a) == untimed(b)
-    assert [p["probability"] for p in a["predictions"]] == [p["probability"]
-                                                            for p in b["predictions"]]
+    assert [p["probability"] for p in a["predictions"]] == [
+        p["probability"] for p in b["predictions"]
+    ]
 
 
 def test_time_budget_keeps_first_model_and_warns(uci_df):
@@ -98,9 +107,13 @@ def test_numeric_threshold_target_and_percent_strings():
     n = 300
     att = rng.uniform(30, 100, n)
     marks = np.clip(att * 0.7 + rng.normal(0, 8, n), 0, 100)
-    df = pd.DataFrame({"Roll No": [f"R{i}" for i in range(n)],
-                       "Attendance": [f"{a:.0f}%" for a in att],
-                       "Final Marks": [f"{m:.1f}" for m in marks]})
+    df = pd.DataFrame(
+        {
+            "Roll No": [f"R{i}" for i in range(n)],
+            "Attendance": [f"{a:.0f}%" for a in att],
+            "Final Marks": [f"{m:.1f}" for m in marks],
+        }
+    )
     df.loc[:19, "Final Marks"] = None  # current students: result not out yet
     cfg = TrainConfig(target="Final Marks", positive_below=40.0, id_column="Roll No")
     r = train_custom(df, cfg)

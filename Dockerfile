@@ -1,14 +1,18 @@
 # Production image: builds the static UI, then serves UI + API from one FastAPI process.
 # Used for Hugging Face Spaces (port 7860) and any Docker host.
+# Base images can be swapped for a mirror, e.g.
+#   --build-arg NODE_IMAGE=public.ecr.aws/docker/library/node:22-slim
+ARG NODE_IMAGE=node:22-slim
+ARG PYTHON_IMAGE=python:3.12-slim
 
-FROM node:22-slim AS web
+FROM ${NODE_IMAGE} AS web
 WORKDIR /app/web
 COPY web/package.json web/package-lock.json web/.npmrc ./
 RUN npm ci --no-audit --no-fund
 COPY web/ ./
 RUN npm run build
 
-FROM python:3.12-slim AS runtime
+FROM ${PYTHON_IMAGE} AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \

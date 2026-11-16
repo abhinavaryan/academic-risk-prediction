@@ -113,13 +113,17 @@ class ModelRegistry:
         model = sio.loads(self._read_verified(f"models/{model_file}"), trusted=TRUSTED_TYPES)
         feats = schema["features"]
         baseline = {
-            f["name"]: (f.get("median") if f["kind"] == "numeric" else f.get("mode"))
-            for f in feats
+            f["name"]: (f.get("median") if f["kind"] == "numeric" else f.get("mode")) for f in feats
         }
         return LoadedModel(
-            cutoff=cutoff, model=model, schema=schema, threshold=float(schema["threshold"]),
-            version=str(schema.get("version", "")), feature_names=[f["name"] for f in feats],
-            baseline=baseline, labels={f["name"]: f.get("label", f["name"]) for f in feats},
+            cutoff=cutoff,
+            model=model,
+            schema=schema,
+            threshold=float(schema["threshold"]),
+            version=str(schema.get("version", "")),
+            feature_names=[f["name"] for f in feats],
+            baseline=baseline,
+            labels={f["name"]: f.get("label", f["name"]) for f in feats},
         )
 
     def samples(self, cutoff: int) -> list[dict]:
@@ -129,5 +133,6 @@ class ModelRegistry:
             with self._lock:
                 if cutoff not in self._samples:
                     self._samples[cutoff] = json.loads(
-                        self._read_verified(f"samples/day{cutoff}.json"))
+                        self._read_verified(f"samples/day{cutoff}.json")
+                    )
         return self._samples[cutoff]

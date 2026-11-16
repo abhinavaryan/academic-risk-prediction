@@ -1,0 +1,300 @@
+{
+ "permutation": [
+  {
+   "feature": "assess_score_rel_cohort",
+   "label": "Avg. score vs. class median",
+   "mean": 0.14277,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_mean_score",
+   "label": "Average score",
+   "mean": 0.07675,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_submit_rate",
+   "label": "Submission rate",
+   "mean": 0.04018,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_tma_mean",
+   "label": "Tutor-marked avg. score",
+   "mean": 0.03978,
+   "std": 0.0
+  },
+  {
+   "feature": "code_module",
+   "label": "Module",
+   "mean": 0.03648,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_active_days",
+   "label": "Active days on LMS",
+   "mean": 0.02641,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_weighted_score",
+   "label": "Weighted average score",
+   "mean": 0.02528,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_submitted",
+   "label": "Assessments submitted",
+   "mean": 0.01953,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_days_since_last",
+   "label": "Days since last LMS activity",
+   "mean": 0.01805,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_n_late",
+   "label": "Late submissions",
+   "mean": 0.01083,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_mean_days_early",
+   "label": "Avg. days submitted before deadline",
+   "mean": 0.00848,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_cma_mean",
+   "label": "Computer-marked avg. score",
+   "mean": 0.00679,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_min_score",
+   "label": "Lowest score",
+   "mean": 0.00638,
+   "std": 0.0
+  },
+  {
+   "feature": "highest_education",
+   "label": "Highest education",
+   "mean": 0.00612,
+   "std": 0.0
+  },
+  {
+   "feature": "imd_band",
+   "label": "Deprivation (IMD) band",
+   "mean": 0.00481,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_n_banked",
+   "label": "Banked (carried-over) results",
+   "mean": 0.00421,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_distinct_sites",
+   "label": "Distinct resources opened",
+   "mean": 0.004,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_missed",
+   "label": "Assessments missed",
+   "mean": 0.00316,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_oucontent",
+   "label": "Clicks: oucontent",
+   "mean": 0.00253,
+   "std": 0.0
+  },
+  {
+   "feature": "region",
+   "label": "Region",
+   "mean": 0.00195,
+   "std": 0.0
+  },
+  {
+   "feature": "num_of_prev_attempts",
+   "label": "Previous attempts",
+   "mean": 0.00162,
+   "std": 0.0
+  },
+  {
+   "feature": "disability",
+   "label": "Disability",
+   "mean": 0.00064,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_questionnaire",
+   "label": "Clicks: questionnaire",
+   "mean": 0.0005,
+   "std": 0.0
+  },
+  {
+   "feature": "studied_credits",
+   "label": "Credits being studied",
+   "mean": 0.00044,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_first_day",
+   "label": "First LMS activity (day)",
+   "mean": 0.00041,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_weekly_slope",
+   "label": "Weekly click trend",
+   "mean": 0.0004,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_last14",
+   "label": "Clicks in last 14 days",
+   "mean": 0.00032,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_rel_cohort",
+   "label": "Clicks vs. class median",
+   "mean": 0.00032,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_due",
+   "label": "Assessments due so far",
+   "mean": 0.00025,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_homepage",
+   "label": "Clicks: homepage",
+   "mean": 0.00022,
+   "std": 0.0
+  },
+  {
+   "feature": "date_registration",
+   "label": "Registered (days relative to start)",
+   "mean": 0.00011,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_url",
+   "label": "Clicks: url",
+   "mean": 8e-05,
+   "std": 0.0
+  },
+  {
+   "feature": "gender",
+   "label": "Gender",
+   "mean": -0.0,
+   "std": 0.0
+  },
+  {
+   "feature": "semester",
+   "label": "Start semester (B=Feb, J=Oct)",
+   "mean": 0.0,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_ouwiki",
+   "label": "Clicks: ouwiki",
+   "mean": 0.0,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_other",
+   "label": "Clicks: other activities",
+   "mean": -1e-05,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_total",
+   "label": "Total LMS clicks",
+   "mean": -4e-05,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_externalquiz",
+   "label": "Clicks: externalquiz",
+   "mean": -5e-05,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_oucollaborate",
+   "label": "Clicks: oucollaborate",
+   "mean": -0.0001,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_page",
+   "label": "Clicks: page",
+   "mean": -0.00013,
+   "std": 0.0
+  },
+  {
+   "feature": "module_presentation_length",
+   "label": "Course length (days)",
+   "mean": -0.00023,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_resource",
+   "label": "Clicks: resource",
+   "mean": -0.00025,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_precourse",
+   "label": "Clicks before course start",
+   "mean": -0.00029,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_subpage",
+   "label": "Clicks: subpage",
+   "mean": -0.00029,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_forumng",
+   "label": "Clicks: forumng",
+   "mean": -0.0004,
+   "std": 0.0
+  },
+  {
+   "feature": "age_band",
+   "label": "Age band",
+   "mean": -0.00046,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_clicks_quiz",
+   "label": "Clicks: quiz",
+   "mean": -0.00111,
+   "std": 0.0
+  },
+  {
+   "feature": "assess_n_fail",
+   "label": "Scores below 40",
+   "mean": -0.00113,
+   "std": 0.0
+  },
+  {
+   "feature": "vle_active_days_rel_cohort",
+   "label": "Active days vs. class median",
+   "mean": -0.0016,
+   "std": 0.0
+  }
+ ],
+ "shap": null,
+ "shap_model": null
+}

@@ -6,23 +6,31 @@
 
 from __future__ import annotations
 
-import json
-import logging
 import os
-import threading
-from dataclasses import asdict
-from pathlib import Path
 
-from fastapi import Depends, FastAPI, File, Form, Request, UploadFile
-from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.responses import FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
-from pydantic import ValidationError
+# OpenMP/BLAS read these when they load: one native thread per request so concurrent trainings
+# cannot oversubscribe the CPU (must run before numpy / scikit-learn are imported).
+for _var in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS"):
+    os.environ.setdefault(_var, os.environ.get("AGRIM_NATIVE_THREADS", "1"))
 
-from riskml import __version__
-from riskml.config import (
+import json  # noqa: E402
+import logging  # noqa: E402
+import threading  # noqa: E402
+from collections.abc import Iterator  # noqa: E402
+from contextlib import contextmanager  # noqa: E402
+from dataclasses import asdict  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+from fastapi import Depends, FastAPI, File, Form, Request, UploadFile  # noqa: E402
+from fastapi.exceptions import RequestValidationError  # noqa: E402
+from fastapi.middleware.cors import CORSMiddleware  # noqa: E402
+from fastapi.middleware.gzip import GZipMiddleware  # noqa: E402
+from fastapi.responses import FileResponse, JSONResponse  # noqa: E402
+from fastapi.staticfiles import StaticFiles  # noqa: E402
+from pydantic import ValidationError  # noqa: E402
+
+from riskml import __version__  # noqa: E402
+from riskml.config import (  # noqa: E402
     ARTIFACTS_DIR,
     CUSTOM_RATE_PER_MIN,
     CUSTOM_TIME_BUDGET_S,
@@ -33,19 +41,19 @@ from riskml.config import (
     ROOT,
     SAMPLE_DATA_DIR,
 )
-from riskml.custom.io import UploadError, read_table
-from riskml.custom.profile import profile
-from riskml.custom.trainer import TrainConfig, TrainingError, train_custom
-from riskml.modeling.zoo import SERVING_MODELS
-from riskml.server.schemas import PredictRequest, PredictResponse, TrainConfigIn
-from riskml.server.security import (
+from riskml.custom.io import UploadError, read_table  # noqa: E402
+from riskml.custom.profile import profile  # noqa: E402
+from riskml.custom.trainer import TrainConfig, TrainingError, train_custom  # noqa: E402
+from riskml.modeling.zoo import SERVING_MODELS  # noqa: E402
+from riskml.server.schemas import PredictRequest, PredictResponse, TrainConfigIn  # noqa: E402
+from riskml.server.security import (  # noqa: E402
     BodySizeLimitMiddleware,
     RateLimiter,
     SecurityMiddleware,
     client_key,
 )
-from riskml.serving.predictor import FeatureValidationError, predict
-from riskml.serving.registry import ArtifactIntegrityError, ModelRegistry, UnknownCutoffError
+from riskml.serving.predictor import FeatureValidationError, predict  # noqa: E402
+from riskml.serving.registry import ArtifactIntegrityError, ModelRegistry, UnknownCutoffError  # noqa: E402
 
 logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"), format="%(message)s")
 logger = logging.getLogger("agrim")
@@ -67,19 +75,27 @@ def _error(request: Request, status: int, code: str, message: str, headers=None,
     return JSONResponse(body, status_code=status, headers=headers)
 
 
-def _limit_native_threads() -> None:
-    """One OpenMP/BLAS thread per request: concurrent trainings must not oversubscribe CPUs."""
-    import sklearn.ensemble  # noqa: F401, PLC0415  (load the OpenMP runtime first)
+NATIVE_THREADS = int(os.environ.get("AGRIM_NATIVE_THREADS", "1"))
+
+
+@contextmanager
+def native_thread_limit() -> Iterator[None]:
+    """Limit OpenMP/BLAS threads *in the calling thread*.
+
+    OpenMP thread counts are per-thread settings, and FastAPI runs sync endpoints in worker
+    threads, so the limit must be applied inside each request, not only at start-up.
+    """
+    import sklearn.ensemble  # noqa: F401, PLC0415  (make sure the OpenMP runtime is loaded)
     from threadpoolctl import threadpool_limits  # noqa: PLC0415
 
-    threadpool_limits(limits=int(os.environ.get("AGRIM_NATIVE_THREADS", "1")))
+    with threadpool_limits(limits=NATIVE_THREADS):
+        yield
 
 
 def create_app(artifacts_dir: Path | None = None, static_dir: Path | None = None,
                rate_per_min: int | None = None, max_trainings: int | None = None,
                time_budget_s: float | None = None, cors_origins: list[str] | None = None,
                trust_proxy: bool | None = None) -> FastAPI:
-    _limit_native_threads()
     app = FastAPI(
         title="Agrim API", version=__version__,
         description="Early academic-risk prediction: OULAD-trained models and "
@@ -188,7 +204,8 @@ def create_app(artifacts_dir: Path | None = None, static_dir: Path | None = None
     @app.post("/api/predict", response_model=PredictResponse, tags=["oulad"])
     def predict_route(body: PredictRequest, request: Request):
         loaded = request.app.state.registry.get(body.cutoff)
-        result = asdict(predict(loaded, body.features))
+        with native_thread_limit():
+            result = asdict(predict(loaded, body.features))
         return {**result, "model": loaded.schema.get("model", ""),
                 "model_version": loaded.version}
 
@@ -205,7 +222,8 @@ def create_app(artifacts_dir: Path | None = None, static_dir: Path | None = None
     @app.post("/api/custom/profile", tags=["custom"], dependencies=[Depends(rate_limited)])
     def custom_profile(file: UploadFile = File(...)):
         df = read_table(read_upload(file), file.filename or "upload")
-        return profile(df)
+        with native_thread_limit():
+            return profile(df)
 
     @app.post("/api/custom/train", tags=["custom"], dependencies=[Depends(rate_limited)])
     def custom_train(request: Request, file: UploadFile = File(...),
@@ -221,8 +239,9 @@ def create_app(artifacts_dir: Path | None = None, static_dir: Path | None = None
                                         "few seconds.", headers={"Retry-After": "15"})
         try:
             df = read_table(read_upload(file), file.filename or "upload")
-            return train_custom(df, TrainConfig(**cfg.model_dump()),
-                                time_budget_s=request.app.state.time_budget_s)
+            with native_thread_limit():
+                return train_custom(df, TrainConfig(**cfg.model_dump()),
+                                    time_budget_s=request.app.state.time_budget_s)
         finally:
             slots.release()
 

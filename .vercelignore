@@ -1,0 +1,13 @@
+.venv
+data
+build
+notebooks
+reports
+tests
+docs
+web/node_modules
+web/.next
+web/out
+web/test-results
+web/playwright-report
+.superpowers

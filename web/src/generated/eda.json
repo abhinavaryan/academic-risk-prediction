@@ -1,0 +1,796 @@
+{
+ "outcomes": [
+  {
+   "outcome": "Distinction",
+   "n": 3024
+  },
+  {
+   "outcome": "Pass",
+   "n": 12361
+  },
+  {
+   "outcome": "Fail",
+   "n": 7052
+  },
+  {
+   "outcome": "Withdrawn",
+   "n": 10156
+  }
+ ],
+ "at_risk_rate": 0.528,
+ "by_module": [
+  {
+   "group": "AAA",
+   "n": 748,
+   "at_risk_rate": 0.2901
+  },
+  {
+   "group": "BBB",
+   "n": 7909,
+   "at_risk_rate": 0.5254
+  },
+  {
+   "group": "CCC",
+   "n": 4434,
+   "at_risk_rate": 0.6216
+  },
+  {
+   "group": "DDD",
+   "n": 6272,
+   "at_risk_rate": 0.5839
+  },
+  {
+   "group": "EEE",
+   "n": 2934,
+   "at_risk_rate": 0.4376
+  },
+  {
+   "group": "FFF",
+   "n": 7762,
+   "at_risk_rate": 0.53
+  },
+  {
+   "group": "GGG",
+   "n": 2534,
+   "at_risk_rate": 0.4025
+  }
+ ],
+ "by_imd_band": [
+  {
+   "group": "0-10%",
+   "n": 3311,
+   "at_risk_rate": 0.6484
+  },
+  {
+   "group": "10-20%",
+   "n": 3516,
+   "at_risk_rate": 0.6138
+  },
+  {
+   "group": "20-30%",
+   "n": 3654,
+   "at_risk_rate": 0.5925
+  },
+  {
+   "group": "30-40%",
+   "n": 3539,
+   "at_risk_rate": 0.5309
+  },
+  {
+   "group": "40-50%",
+   "n": 3256,
+   "at_risk_rate": 0.5341
+  },
+  {
+   "group": "50-60%",
+   "n": 3124,
+   "at_risk_rate": 0.5122
+  },
+  {
+   "group": "60-70%",
+   "n": 2905,
+   "at_risk_rate": 0.4809
+  },
+  {
+   "group": "70-80%",
+   "n": 2879,
+   "at_risk_rate": 0.4849
+  },
+  {
+   "group": "80-90%",
+   "n": 2762,
+   "at_risk_rate": 0.4594
+  },
+  {
+   "group": "90-100%",
+   "n": 2536,
+   "at_risk_rate": 0.4247
+  },
+  {
+   "group": "Unknown",
+   "n": 1111,
+   "at_risk_rate": 0.3429
+  }
+ ],
+ "by_highest_education": [
+  {
+   "group": "A Level or Equivalent",
+   "n": 14045,
+   "at_risk_rate": 0.4797
+  },
+  {
+   "group": "HE Qualification",
+   "n": 4730,
+   "at_risk_rate": 0.4383
+  },
+  {
+   "group": "Lower Than A Level",
+   "n": 13158,
+   "at_risk_rate": 0.6115
+  },
+  {
+   "group": "No Formal quals",
+   "n": 347,
+   "at_risk_rate": 0.7032
+  },
+  {
+   "group": "Post Graduate Qualification",
+   "n": 313,
+   "at_risk_rate": 0.345
+  }
+ ],
+ "by_age_band": [
+  {
+   "group": "0-35",
+   "n": 22944,
+   "at_risk_rate": 0.5497
+  },
+  {
+   "group": "35-55",
+   "n": 9433,
+   "at_risk_rate": 0.4784
+  },
+  {
+   "group": "55<=",
+   "n": 216,
+   "at_risk_rate": 0.3843
+  }
+ ],
+ "by_gender": [
+  {
+   "group": "F",
+   "n": 14718,
+   "at_risk_rate": 0.5156
+  },
+  {
+   "group": "M",
+   "n": 17875,
+   "at_risk_rate": 0.5381
+  }
+ ],
+ "by_disability": [
+  {
+   "group": "N",
+   "n": 29429,
+   "at_risk_rate": 0.5182
+  },
+  {
+   "group": "Y",
+   "n": 3164,
+   "at_risk_rate": 0.6185
+  }
+ ],
+ "engagement_by_week": [
+  {
+   "week": -4,
+   "Distinction": 1.53,
+   "Pass": 2.13,
+   "Fail": 0.55,
+   "Withdrawn": 0.83
+  },
+  {
+   "week": -3,
+   "Distinction": 26.85,
+   "Pass": 16.67,
+   "Fail": 8.76,
+   "Withdrawn": 8.31
+  },
+  {
+   "week": -2,
+   "Distinction": 40.31,
+   "Pass": 25.69,
+   "Fail": 13.22,
+   "Withdrawn": 11.16
+  },
+  {
+   "week": -1,
+   "Distinction": 62.74,
+   "Pass": 40.87,
+   "Fail": 21.79,
+   "Withdrawn": 17.4
+  },
+  {
+   "week": 0,
+   "Distinction": 113.6,
+   "Pass": 81.1,
+   "Fail": 44.7,
+   "Withdrawn": 34.65
+  },
+  {
+   "week": 1,
+   "Distinction": 101.49,
+   "Pass": 73.9,
+   "Fail": 38.62,
+   "Withdrawn": 30.02
+  },
+  {
+   "week": 2,
+   "Distinction": 117.88,
+   "Pass": 92.43,
+   "Fail": 55.73,
+   "Withdrawn": 40.87
+  },
+  {
+   "week": 3,
+   "Distinction": 94.25,
+   "Pass": 69.74,
+   "Fail": 37.37,
+   "Withdrawn": 24.92
+  },
+  {
+   "week": 4,
+   "Distinction": 87.4,
+   "Pass": 64.99,
+   "Fail": 32.06,
+   "Withdrawn": 20.83
+  },
+  {
+   "week": 5,
+   "Distinction": 73.69,
+   "Pass": 55.0,
+   "Fail": 24.73,
+   "Withdrawn": 14.95
+  },
+  {
+   "week": 6,
+   "Distinction": 82.2,
+   "Pass": 61.34,
+   "Fail": 27.67,
+   "Withdrawn": 14.63
+  },
+  {
+   "week": 7,
+   "Distinction": 78.05,
+   "Pass": 58.32,
+   "Fail": 26.1,
+   "Withdrawn": 14.43
+  },
+  {
+   "week": 8,
+   "Distinction": 64.23,
+   "Pass": 42.87,
+   "Fail": 16.1,
+   "Withdrawn": 9.09
+  },
+  {
+   "week": 9,
+   "Distinction": 71.4,
+   "Pass": 48.06,
+   "Fail": 20.11,
+   "Withdrawn": 10.85
+  },
+  {
+   "week": 10,
+   "Distinction": 48.66,
+   "Pass": 30.35,
+   "Fail": 10.7,
+   "Withdrawn": 4.84
+  },
+  {
+   "week": 11,
+   "Distinction": 38.95,
+   "Pass": 27.99,
+   "Fail": 9.99,
+   "Withdrawn": 4.31
+  },
+  {
+   "week": 12,
+   "Distinction": 55.01,
+   "Pass": 40.83,
+   "Fail": 14.92,
+   "Withdrawn": 5.47
+  },
+  {
+   "week": 13,
+   "Distinction": 67.97,
+   "Pass": 49.92,
+   "Fail": 15.63,
+   "Withdrawn": 5.87
+  },
+  {
+   "week": 14,
+   "Distinction": 63.03,
+   "Pass": 43.59,
+   "Fail": 13.02,
+   "Withdrawn": 4.94
+  },
+  {
+   "week": 15,
+   "Distinction": 64.24,
+   "Pass": 43.26,
+   "Fail": 12.17,
+   "Withdrawn": 4.22
+  },
+  {
+   "week": 16,
+   "Distinction": 65.33,
+   "Pass": 44.9,
+   "Fail": 12.47,
+   "Withdrawn": 4.05
+  },
+  {
+   "week": 17,
+   "Distinction": 68.92,
+   "Pass": 48.96,
+   "Fail": 13.02,
+   "Withdrawn": 3.59
+  },
+  {
+   "week": 18,
+   "Distinction": 80.64,
+   "Pass": 59.97,
+   "Fail": 16.15,
+   "Withdrawn": 3.96
+  },
+  {
+   "week": 19,
+   "Distinction": 89.69,
+   "Pass": 60.1,
+   "Fail": 16.32,
+   "Withdrawn": 3.97
+  },
+  {
+   "week": 20,
+   "Distinction": 90.81,
+   "Pass": 62.12,
+   "Fail": 15.35,
+   "Withdrawn": 3.78
+  },
+  {
+   "week": 21,
+   "Distinction": 90.67,
+   "Pass": 58.98,
+   "Fail": 12.85,
+   "Withdrawn": 2.71
+  },
+  {
+   "week": 22,
+   "Distinction": 81.0,
+   "Pass": 54.98,
+   "Fail": 10.89,
+   "Withdrawn": 1.87
+  },
+  {
+   "week": 23,
+   "Distinction": 69.03,
+   "Pass": 50.63,
+   "Fail": 11.53,
+   "Withdrawn": 1.34
+  },
+  {
+   "week": 24,
+   "Distinction": 56.09,
+   "Pass": 40.42,
+   "Fail": 8.46,
+   "Withdrawn": 1.16
+  },
+  {
+   "week": 25,
+   "Distinction": 51.43,
+   "Pass": 34.12,
+   "Fail": 5.96,
+   "Withdrawn": 0.56
+  },
+  {
+   "week": 26,
+   "Distinction": 49.44,
+   "Pass": 34.84,
+   "Fail": 6.1,
+   "Withdrawn": 0.72
+  },
+  {
+   "week": 27,
+   "Distinction": 56.66,
+   "Pass": 41.27,
+   "Fail": 7.35,
+   "Withdrawn": 0.5
+  },
+  {
+   "week": 28,
+   "Distinction": 63.0,
+   "Pass": 46.1,
+   "Fail": 8.26,
+   "Withdrawn": 0.68
+  },
+  {
+   "week": 29,
+   "Distinction": 71.65,
+   "Pass": 52.15,
+   "Fail": 10.17,
+   "Withdrawn": 0.7
+  },
+  {
+   "week": 30,
+   "Distinction": 75.62,
+   "Pass": 57.46,
+   "Fail": 10.84,
+   "Withdrawn": 0.58
+  },
+  {
+   "week": 31,
+   "Distinction": 72.75,
+   "Pass": 61.28,
+   "Fail": 13.6,
+   "Withdrawn": 0.36
+  },
+  {
+   "week": 32,
+   "Distinction": 73.06,
+   "Pass": 56.08,
+   "Fail": 10.74,
+   "Withdrawn": 0.34
+  },
+  {
+   "week": 33,
+   "Distinction": 60.95,
+   "Pass": 52.57,
+   "Fail": 9.96,
+   "Withdrawn": 0.26
+  },
+  {
+   "week": 34,
+   "Distinction": 36.47,
+   "Pass": 29.41,
+   "Fail": 7.07,
+   "Withdrawn": 0.19
+  },
+  {
+   "week": 35,
+   "Distinction": 4.64,
+   "Pass": 3.05,
+   "Fail": 0.35,
+   "Withdrawn": 0.0
+  },
+  {
+   "week": 36,
+   "Distinction": 2.8,
+   "Pass": 1.7,
+   "Fail": 0.22,
+   "Withdrawn": 0.0
+  },
+  {
+   "week": 37,
+   "Distinction": 1.93,
+   "Pass": 1.25,
+   "Fail": 0.19,
+   "Withdrawn": 0.01
+  },
+  {
+   "week": 38,
+   "Distinction": 0.72,
+   "Pass": 0.46,
+   "Fail": 0.05,
+   "Withdrawn": 0.0
+  }
+ ],
+ "withdrawal_curve": [
+  {
+   "day": -60,
+   "share": 0.0625
+  },
+  {
+   "day": -50,
+   "share": 0.0818
+  },
+  {
+   "day": -40,
+   "share": 0.097
+  },
+  {
+   "day": -30,
+   "share": 0.1151
+  },
+  {
+   "day": -20,
+   "share": 0.1432
+  },
+  {
+   "day": -10,
+   "share": 0.1952
+  },
+  {
+   "day": 0,
+   "share": 0.307
+  },
+  {
+   "day": 10,
+   "share": 0.3557
+  },
+  {
+   "day": 20,
+   "share": 0.4643
+  },
+  {
+   "day": 30,
+   "share": 0.5087
+  },
+  {
+   "day": 40,
+   "share": 0.5489
+  },
+  {
+   "day": 50,
+   "share": 0.5777
+  },
+  {
+   "day": 60,
+   "share": 0.6185
+  },
+  {
+   "day": 70,
+   "share": 0.6475
+  },
+  {
+   "day": 80,
+   "share": 0.675
+  },
+  {
+   "day": 90,
+   "share": 0.6979
+  },
+  {
+   "day": 100,
+   "share": 0.7234
+  },
+  {
+   "day": 110,
+   "share": 0.7561
+  },
+  {
+   "day": 120,
+   "share": 0.7759
+  },
+  {
+   "day": 130,
+   "share": 0.802
+  },
+  {
+   "day": 140,
+   "share": 0.8243
+  },
+  {
+   "day": 150,
+   "share": 0.8477
+  },
+  {
+   "day": 160,
+   "share": 0.8772
+  },
+  {
+   "day": 170,
+   "share": 0.9015
+  },
+  {
+   "day": 180,
+   "share": 0.9251
+  },
+  {
+   "day": 190,
+   "share": 0.9349
+  },
+  {
+   "day": 200,
+   "share": 0.9475
+  },
+  {
+   "day": 210,
+   "share": 0.9616
+  },
+  {
+   "day": 220,
+   "share": 0.9754
+  },
+  {
+   "day": 230,
+   "share": 0.9919
+  },
+  {
+   "day": 240,
+   "share": 0.9992
+  },
+  {
+   "day": 250,
+   "share": 0.9999
+  },
+  {
+   "day": 260,
+   "share": 0.9999
+  },
+  {
+   "day": 270,
+   "share": 0.9999
+  }
+ ],
+ "score_by_outcome": [
+  {
+   "outcome": "Distinction",
+   "n": 3024,
+   "p10": 80.94166666666668,
+   "p25": 85.66666666666667,
+   "median": 89.33333333333333,
+   "p75": 92.75,
+   "p90": 95.5
+  },
+  {
+   "outcome": "Pass",
+   "n": 12355,
+   "p10": 61.666666666666664,
+   "p25": 70.5,
+   "median": 78.16666666666667,
+   "p75": 84.2,
+   "p90": 88.68205128205129
+  },
+  {
+   "outcome": "Fail",
+   "n": 5764,
+   "p10": 43.0,
+   "p25": 55.0,
+   "median": 66.2,
+   "p75": 76.33333333333333,
+   "p90": 84.28499999999998
+  },
+  {
+   "outcome": "Withdrawn",
+   "n": 4673,
+   "p10": 33.67619047619048,
+   "p25": 52.2,
+   "median": 68.0,
+   "p75": 80.0,
+   "p90": 87.5
+  }
+ ],
+ "presentations": [
+  {
+   "code_module": "AAA",
+   "code_presentation": "2013J",
+   "length_days": 268,
+   "registrations": 383
+  },
+  {
+   "code_module": "AAA",
+   "code_presentation": "2014J",
+   "length_days": 269,
+   "registrations": 365
+  },
+  {
+   "code_module": "BBB",
+   "code_presentation": "2013J",
+   "length_days": 268,
+   "registrations": 2237
+  },
+  {
+   "code_module": "BBB",
+   "code_presentation": "2014J",
+   "length_days": 262,
+   "registrations": 2292
+  },
+  {
+   "code_module": "BBB",
+   "code_presentation": "2013B",
+   "length_days": 240,
+   "registrations": 1767
+  },
+  {
+   "code_module": "BBB",
+   "code_presentation": "2014B",
+   "length_days": 234,
+   "registrations": 1613
+  },
+  {
+   "code_module": "CCC",
+   "code_presentation": "2014J",
+   "length_days": 269,
+   "registrations": 2498
+  },
+  {
+   "code_module": "CCC",
+   "code_presentation": "2014B",
+   "length_days": 241,
+   "registrations": 1936
+  },
+  {
+   "code_module": "DDD",
+   "code_presentation": "2013J",
+   "length_days": 261,
+   "registrations": 1938
+  },
+  {
+   "code_module": "DDD",
+   "code_presentation": "2014J",
+   "length_days": 262,
+   "registrations": 1803
+  },
+  {
+   "code_module": "DDD",
+   "code_presentation": "2013B",
+   "length_days": 240,
+   "registrations": 1303
+  },
+  {
+   "code_module": "DDD",
+   "code_presentation": "2014B",
+   "length_days": 241,
+   "registrations": 1228
+  },
+  {
+   "code_module": "EEE",
+   "code_presentation": "2013J",
+   "length_days": 268,
+   "registrations": 1052
+  },
+  {
+   "code_module": "EEE",
+   "code_presentation": "2014J",
+   "length_days": 269,
+   "registrations": 1188
+  },
+  {
+   "code_module": "EEE",
+   "code_presentation": "2014B",
+   "length_days": 241,
+   "registrations": 694
+  },
+  {
+   "code_module": "FFF",
+   "code_presentation": "2013J",
+   "length_days": 268,
+   "registrations": 2283
+  },
+  {
+   "code_module": "FFF",
+   "code_presentation": "2014J",
+   "length_days": 269,
+   "registrations": 2365
+  },
+  {
+   "code_module": "FFF",
+   "code_presentation": "2013B",
+   "length_days": 240,
+   "registrations": 1614
+  },
+  {
+   "code_module": "FFF",
+   "code_presentation": "2014B",
+   "length_days": 241,
+   "registrations": 1500
+  },
+  {
+   "code_module": "GGG",
+   "code_presentation": "2013J",
+   "length_days": 261,
+   "registrations": 952
+  },
+  {
+   "code_module": "GGG",
+   "code_presentation": "2014J",
+   "length_days": 269,
+   "registrations": 749
+  },
+  {
+   "code_module": "GGG",
+   "code_presentation": "2014B",
+   "length_days": 241,
+   "registrations": 833
+  }
+ ]
+}

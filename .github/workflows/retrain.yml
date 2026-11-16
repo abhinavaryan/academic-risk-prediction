@@ -1,0 +1,37 @@
+name: Retrain models
+
+# Re-runs the full research study on the official OULAD download and publishes the
+# results as a workflow artifact (models, dashboard data, figures, results report).
+on:
+  workflow_dispatch:
+    inputs:
+      quick:
+        description: "Quick smoke run (2 days, 4 models) instead of the full study"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-research.txt
+      - run: python -m riskml.oulad.download --dest data/oulad
+      - run: python -m riskml.research.pipeline --data-dir data/oulad ${{ inputs.quick && '--quick --out-root build/quick' || '' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: research-results
+          path: |
+            artifacts/
+            web/src/generated/
+            reports/
+            build/quick/
+          if-no-files-found: ignore

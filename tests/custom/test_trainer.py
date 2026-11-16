@@ -106,3 +106,9 @@ def test_numeric_threshold_target_and_percent_strings():
     assert r["summary"]["features_used"] == ["Attendance"]
     scored = [p for p in r["predictions"] if p["source"] == "scored"]
     assert scored[0]["label"].startswith("R")
+
+
+def test_explanations_shrink_when_over_budget(uci_df):
+    r = train_custom(uci_df, UCI_CFG, time_budget_s=0.0)
+    assert r["summary"]["n_explained"] <= 300
+    assert r["summary"]["n_explained"] >= 1

@@ -36,6 +36,7 @@ from riskml.modeling.zoo import MODEL_INFO, SERVING_MODELS, serving_zoo
 from riskml.serving.predictor import band_of
 
 LEAKAGE_AUC = 0.98
+REASON_ROWS_OVER_BUDGET = 300
 MAX_PREDICTION_ROWS = 10_000
 _UNUSABLE = {"id": "identifier column", "pii": "personal data (never used)",
              "text": "free text", "constant": "same value in every row",
@@ -241,7 +242,11 @@ def train_custom(df: pd.DataFrame, cfg: TrainConfig,
 
     # Explain: every scored row, then the riskiest labeled rows, up to MAX_REASON_ROWS.
     order = list(df.index[scored]) + list(proba[labeled].sort_values(ascending=False).index)
-    explain_idx = order[:MAX_REASON_ROWS]
+    over_budget = time.perf_counter() - started > time_budget_s
+    explain_idx = order[:REASON_ROWS_OVER_BUDGET if over_budget else MAX_REASON_ROWS]
+    if over_budget and len(order) > len(explain_idx):
+        warnings.append(f"Reasons were computed for the {len(explain_idx)} highest-priority rows "
+                        "only, to stay within the time budget.")
     baseline = {c: (X_lab[c].median() if c in numeric else
                     (X_lab[c].mode().iloc[0] if X_lab[c].notna().any() else np.nan))
                 for c in X.columns}
@@ -291,7 +296,7 @@ def train_custom(df: pd.DataFrame, cfg: TrainConfig,
             "features_used": list(X.columns), "excluded": excluded, "target": cfg.target,
             "positive_values": cfg.positive_values, "negative_values": cfg.negative_values,
             "unknown_values": cfg.unknown_values, "positive_below": cfg.positive_below,
-            "id_column": cfg.id_column,
+            "id_column": cfg.id_column, "n_explained": len(explain_idx),
         },
         "leaderboard": leaderboard,
         "champion": champion,

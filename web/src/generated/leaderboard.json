@@ -1,0 +1,424 @@
+{
+ "cutoff": 60,
+ "champion": "Logistic Regression",
+ "deployed": "Logistic Regression",
+ "selection_metric": "cv.roc_auc",
+ "models": [
+  {
+   "name": "Logistic Regression",
+   "family": "Linear",
+   "tuned": false,
+   "threshold": 0.3539,
+   "cv": {
+    "accuracy": 0.7527,
+    "precision": 0.6906,
+    "recall": 0.7795,
+    "f1": 0.7324,
+    "roc_auc": 0.8439,
+    "pr_auc": 0.8318,
+    "mcc": 0.5073,
+    "balanced_accuracy": 0.7558,
+    "brier": 0.1554,
+    "roc_auc_std": 0.0005,
+    "f1_std": 0.0024,
+    "folds": [
+     {
+      "roc_auc": 0.8435,
+      "f1": 0.73
+     },
+     {
+      "roc_auc": 0.8444,
+      "f1": 0.7348
+     }
+    ]
+   },
+   "test": {
+    "accuracy": 0.7302,
+    "precision": 0.6198,
+    "recall": 0.7557,
+    "f1": 0.6811,
+    "roc_auc": 0.8206,
+    "pr_auc": 0.7719,
+    "mcc": 0.4579,
+    "balanced_accuracy": 0.7351,
+    "brier": 0.1616,
+    "log_loss": 0.4927,
+    "threshold": 0.3539,
+    "tp": 2540,
+    "fp": 1558,
+    "tn": 3899,
+    "fn": 821
+   },
+   "test_at_0_5": {
+    "accuracy": 0.764,
+    "precision": 0.7227,
+    "recall": 0.618,
+    "f1": 0.6662,
+    "roc_auc": 0.8206,
+    "pr_auc": 0.7719,
+    "mcc": 0.489,
+    "balanced_accuracy": 0.736,
+    "brier": 0.1616,
+    "log_loss": 0.4927,
+    "threshold": 0.5,
+    "tp": 2077,
+    "fp": 797,
+    "tn": 4660,
+    "fn": 1284
+   },
+   "ci95": {
+    "accuracy": [
+     0.7194,
+     0.7393
+    ],
+    "precision": [
+     0.6033,
+     0.636
+    ],
+    "recall": [
+     0.7405,
+     0.7714
+    ],
+    "f1": [
+     0.6665,
+     0.6955
+    ],
+    "roc_auc": [
+     0.81,
+     0.8283
+    ],
+    "pr_auc": [
+     0.7601,
+     0.7866
+    ],
+    "mcc": [
+     0.4366,
+     0.4776
+    ]
+   },
+   "timing": {
+    "cv_seconds": 0.44,
+    "fit_seconds": 0.42,
+    "predict_ms_per_1k": 3.883
+   },
+   "mcnemar_vs_champion": null,
+   "rank": 1
+  },
+  {
+   "name": "Gradient Boosting (HistGB)",
+   "family": "Boosting ensemble",
+   "tuned": false,
+   "threshold": 0.3763,
+   "cv": {
+    "accuracy": 0.7533,
+    "precision": 0.7029,
+    "recall": 0.7477,
+    "f1": 0.7246,
+    "roc_auc": 0.8327,
+    "pr_auc": 0.8226,
+    "mcc": 0.5023,
+    "balanced_accuracy": 0.7526,
+    "brier": 0.162,
+    "roc_auc_std": 0.0009,
+    "f1_std": 0.0017,
+    "folds": [
+     {
+      "roc_auc": 0.8337,
+      "f1": 0.7263
+     },
+     {
+      "roc_auc": 0.8319,
+      "f1": 0.7229
+     }
+    ]
+   },
+   "test": {
+    "accuracy": 0.7258,
+    "precision": 0.6172,
+    "recall": 0.7388,
+    "f1": 0.6725,
+    "roc_auc": 0.7994,
+    "pr_auc": 0.731,
+    "mcc": 0.4452,
+    "balanced_accuracy": 0.7283,
+    "brier": 0.181,
+    "log_loss": 0.543,
+    "threshold": 0.3763,
+    "tp": 2483,
+    "fp": 1540,
+    "tn": 3917,
+    "fn": 878
+   },
+   "test_at_0_5": {
+    "accuracy": 0.7403,
+    "precision": 0.6636,
+    "recall": 0.6462,
+    "f1": 0.6548,
+    "roc_auc": 0.7994,
+    "pr_auc": 0.731,
+    "mcc": 0.4468,
+    "balanced_accuracy": 0.7222,
+    "brier": 0.181,
+    "log_loss": 0.543,
+    "threshold": 0.5,
+    "tp": 2172,
+    "fp": 1101,
+    "tn": 4356,
+    "fn": 1189
+   },
+   "ci95": {
+    "accuracy": [
+     0.7164,
+     0.7346
+    ],
+    "precision": [
+     0.6001,
+     0.6344
+    ],
+    "recall": [
+     0.722,
+     0.7499
+    ],
+    "f1": [
+     0.6592,
+     0.6852
+    ],
+    "roc_auc": [
+     0.786,
+     0.8066
+    ],
+    "pr_auc": [
+     0.7145,
+     0.7456
+    ],
+    "mcc": [
+     0.4248,
+     0.4625
+    ]
+   },
+   "timing": {
+    "cv_seconds": 3.08,
+    "fit_seconds": 1.16,
+    "predict_ms_per_1k": 7.239
+   },
+   "mcnemar_vs_champion": {
+    "statistic": 1.5736,
+    "p_value": 0.20969030168804276,
+    "a_only_correct": 454,
+    "b_only_correct": 416
+   },
+   "rank": 2
+  },
+  {
+   "name": "Random Forest",
+   "family": "Bagging ensemble",
+   "tuned": false,
+   "threshold": 0.3886,
+   "cv": {
+    "accuracy": 0.7491,
+    "precision": 0.6919,
+    "recall": 0.7606,
+    "f1": 0.7246,
+    "roc_auc": 0.8325,
+    "pr_auc": 0.8191,
+    "mcc": 0.497,
+    "balanced_accuracy": 0.7504,
+    "brier": 0.1612,
+    "roc_auc_std": 0.0015,
+    "f1_std": 0.0003,
+    "folds": [
+     {
+      "roc_auc": 0.831,
+      "f1": 0.725
+     },
+     {
+      "roc_auc": 0.8341,
+      "f1": 0.7243
+     }
+    ]
+   },
+   "test": {
+    "accuracy": 0.7185,
+    "precision": 0.6051,
+    "recall": 0.753,
+    "f1": 0.671,
+    "roc_auc": 0.8004,
+    "pr_auc": 0.7457,
+    "mcc": 0.438,
+    "balanced_accuracy": 0.7252,
+    "brier": 0.1741,
+    "log_loss": 0.5194,
+    "threshold": 0.3886,
+    "tp": 2531,
+    "fp": 1652,
+    "tn": 3805,
+    "fn": 830
+   },
+   "test_at_0_5": {
+    "accuracy": 0.7371,
+    "precision": 0.663,
+    "recall": 0.6311,
+    "f1": 0.6466,
+    "roc_auc": 0.8004,
+    "pr_auc": 0.7457,
+    "mcc": 0.4379,
+    "balanced_accuracy": 0.7168,
+    "brier": 0.1741,
+    "log_loss": 0.5194,
+    "threshold": 0.5,
+    "tp": 2121,
+    "fp": 1078,
+    "tn": 4379,
+    "fn": 1240
+   },
+   "ci95": {
+    "accuracy": [
+     0.7099,
+     0.7273
+    ],
+    "precision": [
+     0.589,
+     0.6204
+    ],
+    "recall": [
+     0.7352,
+     0.7624
+    ],
+    "f1": [
+     0.6595,
+     0.6833
+    ],
+    "roc_auc": [
+     0.788,
+     0.8079
+    ],
+    "pr_auc": [
+     0.7309,
+     0.7601
+    ],
+    "mcc": [
+     0.4211,
+     0.4544
+    ]
+   },
+   "timing": {
+    "cv_seconds": 1.08,
+    "fit_seconds": 0.89,
+    "predict_ms_per_1k": 6.675
+   },
+   "mcnemar_vs_champion": {
+    "statistic": 9.3245,
+    "p_value": 0.0022611034931302,
+    "a_only_correct": 598,
+    "b_only_correct": 496
+   },
+   "rank": 3
+  },
+  {
+   "name": "Baseline (majority)",
+   "family": "Baseline",
+   "tuned": false,
+   "threshold": 0.434,
+   "cv": {
+    "accuracy": 0.4341,
+    "precision": 0.4341,
+    "recall": 1.0,
+    "f1": 0.6054,
+    "roc_auc": 0.5,
+    "pr_auc": 0.4341,
+    "mcc": 0.0,
+    "balanced_accuracy": 0.5,
+    "brier": 0.2457,
+    "roc_auc_std": 0.0,
+    "f1_std": 0.0001,
+    "folds": [
+     {
+      "roc_auc": 0.5,
+      "f1": 0.6054
+     },
+     {
+      "roc_auc": 0.5,
+      "f1": 0.6053
+     }
+    ]
+   },
+   "test": {
+    "accuracy": 0.3812,
+    "precision": 0.3812,
+    "recall": 1.0,
+    "f1": 0.5519,
+    "roc_auc": 0.5,
+    "pr_auc": 0.3812,
+    "mcc": 0.0,
+    "balanced_accuracy": 0.5,
+    "brier": 0.2387,
+    "log_loss": 0.6704,
+    "threshold": 0.434,
+    "tp": 3361,
+    "fp": 5457,
+    "tn": 0,
+    "fn": 0
+   },
+   "test_at_0_5": {
+    "accuracy": 0.6188,
+    "precision": 0.0,
+    "recall": 0.0,
+    "f1": 0.0,
+    "roc_auc": 0.5,
+    "pr_auc": 0.3812,
+    "mcc": 0.0,
+    "balanced_accuracy": 0.5,
+    "brier": 0.2387,
+    "log_loss": 0.6704,
+    "threshold": 0.5,
+    "tp": 0,
+    "fp": 0,
+    "tn": 5457,
+    "fn": 3361
+   },
+   "ci95": {
+    "accuracy": [
+     0.3738,
+     0.3905
+    ],
+    "precision": [
+     0.3738,
+     0.3905
+    ],
+    "recall": [
+     1.0,
+     1.0
+    ],
+    "f1": [
+     0.5441,
+     0.5617
+    ],
+    "roc_auc": [
+     0.5,
+     0.5
+    ],
+    "pr_auc": [
+     0.3738,
+     0.3905
+    ],
+    "mcc": [
+     0.0,
+     0.0
+    ]
+   },
+   "timing": {
+    "cv_seconds": 0.25,
+    "fit_seconds": 0.16,
+    "predict_ms_per_1k": 2.749
+   },
+   "mcnemar_vs_champion": {
+    "statistic": 2005.9172,
+    "p_value": 0.0,
+    "a_only_correct": 3899,
+    "b_only_correct": 821
+   },
+   "rank": 4
+  }
+ ],
+ "tuning": {}
+}

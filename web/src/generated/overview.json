@@ -1,0 +1,186 @@
+{
+ "generated_at": "2026-11-16T20:08:28+00:00",
+ "version": "1.0.0",
+ "quick": true,
+ "runtime_minutes": 0.8,
+ "dataset": {
+  "registrations": 32593,
+  "students": 28785,
+  "modules": 7,
+  "presentations": 4,
+  "module_presentations": 22,
+  "vle_interactions": 10655280,
+  "vle_clicks": 39605099,
+  "vle_resources": 6364,
+  "assessments": 206,
+  "assessment_submissions": 173912
+ },
+ "split": {
+  "train_presentations": [
+   "2013B",
+   "2013J",
+   "2014B"
+  ],
+  "test_presentation": "2014J",
+  "n_train": 17543,
+  "n_test": 8818,
+  "cv_folds": 2,
+  "cv": "StratifiedGroupKFold grouped by student"
+ },
+ "primary_cutoff": 60,
+ "cutoffs": [
+  0,
+  60
+ ],
+ "n_models": 4,
+ "n_features": 49,
+ "champion": {
+  "name": "Logistic Regression",
+  "test": {
+   "accuracy": 0.7302,
+   "precision": 0.6198,
+   "recall": 0.7557,
+   "f1": 0.6811,
+   "roc_auc": 0.8206,
+   "pr_auc": 0.7719,
+   "mcc": 0.4579,
+   "balanced_accuracy": 0.7351,
+   "brier": 0.1616,
+   "log_loss": 0.4927,
+   "threshold": 0.3539,
+   "tp": 2540,
+   "fp": 1558,
+   "tn": 3899,
+   "fn": 821
+  },
+  "cv_roc_auc": 0.8439,
+  "ci95": {
+   "accuracy": [
+    0.7194,
+    0.7393
+   ],
+   "precision": [
+    0.6033,
+    0.636
+   ],
+   "recall": [
+    0.7405,
+    0.7714
+   ],
+   "f1": [
+    0.6665,
+    0.6955
+   ],
+   "roc_auc": [
+    0.81,
+    0.8283
+   ],
+   "pr_auc": [
+    0.7601,
+    0.7866
+   ],
+   "mcc": [
+    0.4366,
+    0.4776
+   ]
+  }
+ },
+ "deployed": {
+  "name": "Logistic Regression",
+  "test": {
+   "accuracy": 0.7302,
+   "precision": 0.6198,
+   "recall": 0.7557,
+   "f1": 0.6811,
+   "roc_auc": 0.8206,
+   "pr_auc": 0.7719,
+   "mcc": 0.4579,
+   "balanced_accuracy": 0.7351,
+   "brier": 0.1616,
+   "log_loss": 0.4927,
+   "threshold": 0.3539,
+   "tp": 2540,
+   "fp": 1558,
+   "tn": 3899,
+   "fn": 821
+  },
+  "cv_roc_auc": 0.8439,
+  "ci95": {
+   "accuracy": [
+    0.7194,
+    0.7393
+   ],
+   "precision": [
+    0.6033,
+    0.636
+   ],
+   "recall": [
+    0.7405,
+    0.7714
+   ],
+   "f1": [
+    0.6665,
+    0.6955
+   ],
+   "roc_auc": [
+    0.81,
+    0.8283
+   ],
+   "pr_auc": [
+    0.7601,
+    0.7866
+   ],
+   "mcc": [
+    0.4366,
+    0.4776
+   ]
+  },
+  "reason": "Highest cross-validated ROC-AUC among scikit-learn-native models, which run on the serverless runtime without extra native libraries and load securely with skops."
+ },
+ "early_warning": {
+  "cutoff": 60,
+  "roc_auc": 0.8206,
+  "f1": 0.6811,
+  "precision": 0.6198,
+  "recall": 0.7557,
+  "accuracy": 0.7302,
+  "pr_auc": 0.7719,
+  "tp": 2540,
+  "fp": 1558,
+  "fn": 821,
+  "tn": 3899,
+  "threshold": 0.3539,
+  "ci95": {
+   "accuracy": [
+    0.7194,
+    0.7393
+   ],
+   "precision": [
+    0.6033,
+    0.636
+   ],
+   "recall": [
+    0.7405,
+    0.7714
+   ],
+   "f1": [
+    0.6665,
+    0.6955
+   ],
+   "roc_auc": [
+    0.81,
+    0.8283
+   ],
+   "pr_auc": [
+    0.7601,
+    0.7866
+   ],
+   "mcc": [
+    0.4366,
+    0.4776
+   ]
+  },
+  "at_risk_remaining_test": 3361
+ },
+ "notes": []
+}

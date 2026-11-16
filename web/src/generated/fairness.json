@@ -1,0 +1,290 @@
+{
+ "threshold": 0.3539,
+ "attributes": [
+  {
+   "attribute": "gender",
+   "label": "Gender",
+   "groups": [
+    {
+     "group": "F",
+     "n": 3730,
+     "base_rate": 0.3609,
+     "positive_rate": 0.4638,
+     "tpr": 0.7288,
+     "fpr": 0.3142,
+     "precision": 0.5671,
+     "roc_auc": 0.7872
+    },
+    {
+     "group": "M",
+     "n": 5088,
+     "base_rate": 0.396,
+     "positive_rate": 0.4654,
+     "tpr": 0.7737,
+     "fpr": 0.2633,
+     "precision": 0.6584,
+     "roc_auc": 0.8429
+    }
+   ],
+   "gaps": {
+    "tpr_gap": 0.0449,
+    "fpr_gap": 0.0509,
+    "positive_rate_gap": 0.0016
+   }
+  },
+  {
+   "attribute": "disability",
+   "label": "Disability",
+   "groups": [
+    {
+     "group": "N",
+     "n": 8014,
+     "base_rate": 0.3695,
+     "positive_rate": 0.4512,
+     "tpr": 0.7504,
+     "fpr": 0.2759,
+     "precision": 0.6145,
+     "roc_auc": 0.8202
+    },
+    {
+     "group": "Y",
+     "n": 804,
+     "base_rate": 0.4975,
+     "positive_rate": 0.5995,
+     "tpr": 0.795,
+     "fpr": 0.4059,
+     "precision": 0.6598,
+     "roc_auc": 0.8066
+    }
+   ],
+   "gaps": {
+    "tpr_gap": 0.0446,
+    "fpr_gap": 0.13,
+    "positive_rate_gap": 0.1483
+   }
+  },
+  {
+   "attribute": "age_band",
+   "label": "Age band",
+   "groups": [
+    {
+     "group": "0-35",
+     "n": 6030,
+     "base_rate": 0.3952,
+     "positive_rate": 0.5055,
+     "tpr": 0.7893,
+     "fpr": 0.32,
+     "precision": 0.6171,
+     "roc_auc": 0.8253
+    },
+    {
+     "group": "35-55",
+     "n": 2707,
+     "base_rate": 0.3521,
+     "positive_rate": 0.3805,
+     "tpr": 0.6779,
+     "fpr": 0.2189,
+     "precision": 0.6272,
+     "roc_auc": 0.8125
+    },
+    {
+     "group": "55<=",
+     "n": 81,
+     "base_rate": 0.3086,
+     "positive_rate": 0.2469,
+     "tpr": 0.52,
+     "fpr": 0.125,
+     "precision": 0.65,
+     "roc_auc": 0.7907
+    }
+   ],
+   "gaps": {
+    "tpr_gap": 0.2693,
+    "fpr_gap": 0.195,
+    "positive_rate_gap": 0.2586
+   }
+  },
+  {
+   "attribute": "imd_band",
+   "label": "Deprivation (IMD) band",
+   "groups": [
+    {
+     "group": "0-10%",
+     "n": 779,
+     "base_rate": 0.466,
+     "positive_rate": 0.6162,
+     "tpr": 0.8485,
+     "fpr": 0.4135,
+     "precision": 0.6417,
+     "roc_auc": 0.8144
+    },
+    {
+     "group": "10-20%",
+     "n": 866,
+     "base_rate": 0.448,
+     "positive_rate": 0.5785,
+     "tpr": 0.8067,
+     "fpr": 0.3933,
+     "precision": 0.6248,
+     "roc_auc": 0.8163
+    },
+    {
+     "group": "20-30%",
+     "n": 935,
+     "base_rate": 0.4374,
+     "positive_rate": 0.5209,
+     "tpr": 0.8117,
+     "fpr": 0.2947,
+     "precision": 0.6817,
+     "roc_auc": 0.8523
+    },
+    {
+     "group": "30-40%",
+     "n": 939,
+     "base_rate": 0.3898,
+     "positive_rate": 0.475,
+     "tpr": 0.7623,
+     "fpr": 0.2914,
+     "precision": 0.6256,
+     "roc_auc": 0.8095
+    },
+    {
+     "group": "40-50%",
+     "n": 875,
+     "base_rate": 0.376,
+     "positive_rate": 0.48,
+     "tpr": 0.7508,
+     "fpr": 0.3168,
+     "precision": 0.5881,
+     "roc_auc": 0.8061
+    },
+    {
+     "group": "50-60%",
+     "n": 886,
+     "base_rate": 0.3804,
+     "positive_rate": 0.4684,
+     "tpr": 0.7596,
+     "fpr": 0.2896,
+     "precision": 0.6169,
+     "roc_auc": 0.8248
+    },
+    {
+     "group": "60-70%",
+     "n": 853,
+     "base_rate": 0.3517,
+     "positive_rate": 0.3998,
+     "tpr": 0.6733,
+     "fpr": 0.2514,
+     "precision": 0.5924,
+     "roc_auc": 0.7964
+    },
+    {
+     "group": "70-80%",
+     "n": 834,
+     "base_rate": 0.3609,
+     "positive_rate": 0.4185,
+     "tpr": 0.7309,
+     "fpr": 0.242,
+     "precision": 0.6304,
+     "roc_auc": 0.8325
+    },
+    {
+     "group": "80-90%",
+     "n": 777,
+     "base_rate": 0.3269,
+     "positive_rate": 0.4157,
+     "tpr": 0.7008,
+     "fpr": 0.2772,
+     "precision": 0.5511,
+     "roc_auc": 0.7913
+    },
+    {
+     "group": "90-100%",
+     "n": 715,
+     "base_rate": 0.3021,
+     "positive_rate": 0.3566,
+     "tpr": 0.7037,
+     "fpr": 0.2064,
+     "precision": 0.5961,
+     "roc_auc": 0.8337
+    },
+    {
+     "group": "Unknown",
+     "n": 359,
+     "base_rate": 0.273,
+     "positive_rate": 0.2256,
+     "tpr": 0.5408,
+     "fpr": 0.1073,
+     "precision": 0.6543,
+     "roc_auc": 0.7761
+    }
+   ],
+   "gaps": {
+    "tpr_gap": 0.3077,
+    "fpr_gap": 0.3062,
+    "positive_rate_gap": 0.3906
+   }
+  },
+  {
+   "attribute": "highest_education",
+   "label": "Highest education",
+   "groups": [
+    {
+     "group": "A Level or Equivalent",
+     "n": 3924,
+     "base_rate": 0.3486,
+     "positive_rate": 0.4088,
+     "tpr": 0.7105,
+     "fpr": 0.2473,
+     "precision": 0.606,
+     "roc_auc": 0.8167
+    },
+    {
+     "group": "HE Qualification",
+     "n": 1504,
+     "base_rate": 0.3125,
+     "positive_rate": 0.3438,
+     "tpr": 0.6723,
+     "fpr": 0.1944,
+     "precision": 0.6112,
+     "roc_auc": 0.8131
+    },
+    {
+     "group": "Lower Than A Level",
+     "n": 3218,
+     "base_rate": 0.4543,
+     "positive_rate": 0.5883,
+     "tpr": 0.8249,
+     "fpr": 0.3912,
+     "precision": 0.6371,
+     "roc_auc": 0.8178
+    },
+    {
+     "group": "No Formal quals",
+     "n": 62,
+     "base_rate": 0.5,
+     "positive_rate": 0.6935,
+     "tpr": 0.871,
+     "fpr": 0.5161,
+     "precision": 0.6279,
+     "roc_auc": 0.8304
+    },
+    {
+     "group": "Post Graduate Qualification",
+     "n": 110,
+     "base_rate": 0.2727,
+     "positive_rate": 0.3727,
+     "tpr": 0.6333,
+     "fpr": 0.275,
+     "precision": 0.4634,
+     "roc_auc": 0.7471
+    }
+   ],
+   "gaps": {
+    "tpr_gap": 0.2377,
+    "fpr_gap": 0.3217,
+    "positive_rate_gap": 0.3497
+   }
+  }
+ ]
+}

@@ -1,0 +1,33 @@
+name: Deploy to Hugging Face Spaces
+
+# One-click backup deployment. Needs:
+#   repository secret   HF_TOKEN  (a Hugging Face token with "write" access)
+#   repository variable HF_SPACE  (e.g. your-username/agrim)
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Push to the Space (Docker SDK)
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          test -n "$HF_TOKEN" || { echo "Add the HF_TOKEN repository secret"; exit 1; }
+          test -n "$HF_SPACE" || { echo "Add the HF_SPACE repository variable"; exit 1; }
+          cp deploy/huggingface/README.md README.md
+          rm -rf reports notebooks docs tests .github .devcontainer
+          git lfs install
+          git lfs track "*.skops" "*.png" "*.xlsx" "*.zip"
+          git config user.name "deploy-bot"
+          git config user.email "deploy-bot@users.noreply.github.com"
+          git checkout --orphan hf-deploy
+          git add -A
+          git commit -qm "Deploy $GITHUB_SHA"
+          git push --force "https://user:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" hf-deploy:main

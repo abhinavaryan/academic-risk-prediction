@@ -26,7 +26,7 @@ jobs:
       - run: pip install -r requirements-research.txt
       - run: python -m riskml.oulad.download --dest data/oulad
       - run: python -m riskml.research.pipeline --data-dir data/oulad ${{ inputs.quick && '--quick --out-root build/quick' || '' }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: research-results
           path: |

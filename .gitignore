@@ -1,19 +1,40 @@
+# Python
 __pycache__/
 *.py[cod]
-*$py.class
-
-# Environments
-.env
-.venv
-env/
+.venv/
 venv/
-ENV/
+env/
+.pytest_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
 
-# Vercel
+# Data (downloaded by the pipeline, never committed)
+data/
+*.parquet
+
+# Node / Next.js
+web/node_modules/
+web/.next/
+web/out/
+web/test-results/
+web/playwright-report/
+web/coverage/
+web/next-env.d.ts
+*.tsbuildinfo
+
+# Deploy / env
 .vercel
+.env
+.env.*
+!.env.example
 
 # IDE / OS
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Agent scratch
+.superpowers/

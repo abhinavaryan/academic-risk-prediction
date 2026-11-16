@@ -1,0 +1,6 @@
+# Tooling for tests and linting.
+-r requirements.txt
+pytest==9.2.0
+pytest-cov==7.0.0
+httpx==0.28.1
+ruff==0.17.5

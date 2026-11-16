@@ -1,0 +1,8 @@
+# Offline research pipeline (training + evaluation on the full OULAD dataset).
+-r requirements.txt
+lightgbm==4.7.0
+xgboost==3.4.1
+catboost==1.2.10
+optuna==5.1.0
+pyarrow==26.0.1
+matplotlib==3.11.2

@@ -65,7 +65,9 @@ _SCALED = {"Logistic Regression", "Naive Bayes", "k-Nearest Neighbours", "Linear
 
 
 def make_preprocessor(numeric: list[str], categorical: list[str], scale: bool) -> ColumnTransformer:
-    num_steps: list = [("impute", SimpleImputer(strategy="median", add_indicator=True))]
+    num_steps: list = [(
+        "impute", SimpleImputer(strategy="median", add_indicator=True, keep_empty_features=True)
+    )]
     if scale:
         num_steps.append(("scale", StandardScaler()))
     cat = Pipeline([

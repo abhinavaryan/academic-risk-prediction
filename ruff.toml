@@ -12,5 +12,8 @@ ignore = [
   "RUF001", "RUF002", "RUF003",
 ]
 
+[lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.File", "fastapi.Form", "fastapi.Depends", "fastapi.Query"]
+
 [lint.per-file-ignores]
 "tests/**" = ["S", "PLR", "PLC0415", "B"]

@@ -62,7 +62,10 @@ from riskml.modeling.zoo import MODEL_INFO, pipeline_for
 from riskml.oulad.features import FEATURE_GROUPS, FEATURE_LABELS, FeatureFrame, build_features
 from riskml.oulad.load import KEYS, OuladTables, load_tables
 
-DEPLOY_MODEL = "Gradient Boosting (HistGB)"
+# Candidates for deployment: scikit-learn-native, compact, loadable with skops. The deployed
+# model is the candidate with the best cross-validated ROC-AUC (never chosen on the test set).
+DEPLOYABLE = ("Logistic Regression", "Gradient Boosting (HistGB)", "Random Forest", "Extra Trees",
+              "Neural Network (MLP)", "Decision Tree")
 TUNED = ("Gradient Boosting (HistGB)", "LightGBM", "XGBoost", "Random Forest")
 TIMELINE_MODELS = ("Logistic Regression", "Random Forest", "Gradient Boosting (HistGB)",
                    "LightGBM")
@@ -343,8 +346,8 @@ def primary_study(ff: FeatureFrame, s: Settings) -> dict:
     ranked = sorted(records.values(), key=lambda r: (r["cv"]["roc_auc"], r["cv"]["f1"]),
                     reverse=True)
     champion = ranked[0]["name"]
-    deploy_name = f"{DEPLOY_MODEL} (tuned)" if f"{DEPLOY_MODEL} (tuned)" in records \
-        else DEPLOY_MODEL
+    deploy_name = next(r["name"] for r in ranked
+                       if r["name"].replace(" (tuned)", "") in DEPLOYABLE)
     champ_pred = (test_p[champion] >= records[champion]["threshold"]).astype(int)
     for r in ranked:
         pred = (test_p[r["name"]] >= r["threshold"]).astype(int)
@@ -359,20 +362,33 @@ def primary_study(ff: FeatureFrame, s: Settings) -> dict:
     }
 
 
-def deploy_estimator(best_params: dict):
-    params = best_params.get(DEPLOY_MODEL)
-    if params:
-        return HistGradientBoostingClassifier(**params, random_state=SEED)
-    return HistGradientBoostingClassifier(max_iter=300, learning_rate=0.06, random_state=SEED)
+def base_name(name: str) -> str:
+    return name.replace(" (tuned)", "")
 
 
-def timeline_estimators(best_params: dict, s: Settings) -> dict:
+def deploy_estimator(deployed: str, best_params: dict, n_jobs: int = 1):
+    """Fresh estimator of the deployed family (tuned hyper-parameters when it was tuned)."""
+    from riskml.modeling.zoo import _sklearn_estimators  # noqa: PLC0415
+
+    est = clone(_sklearn_estimators(SEED, n_jobs, None)[base_name(deployed)])
+    if deployed.endswith("(tuned)") and base_name(deployed) in best_params:
+        est.set_params(**best_params[base_name(deployed)])
+    return est
+
+
+def timeline_estimators(best_params: dict, s: Settings, deployed: str) -> dict:
     out = {}
-    for name in s.timeline_models:
-        if name == "Logistic Regression":
+    names = list(dict.fromkeys([*s.timeline_models, base_name(deployed)]))
+    for name in names:
+        if name == base_name(deployed):
+            out[name] = deploy_estimator(deployed, best_params, s.n_jobs)
+        elif name == "Logistic Regression":
             out[name] = LogisticRegression(max_iter=2000)
         elif name == "Gradient Boosting (HistGB)":
-            out[name] = deploy_estimator(best_params)
+            p = best_params.get(name)
+            out[name] = (HistGradientBoostingClassifier(**p, random_state=SEED) if p else
+                         HistGradientBoostingClassifier(max_iter=300, learning_rate=0.06,
+                                                        random_state=SEED))
         elif name == "Random Forest":
             p = best_params.get(name)
             out[name] = (RandomForestClassifier(**p, n_jobs=s.n_jobs, random_state=SEED) if p
@@ -446,12 +462,12 @@ def sample_students(ff: FeatureFrame, n: int) -> list[dict]:
 
 
 def save_deployed(art: Path, cutoff: int, model, ff: FeatureFrame, Xtr, threshold: float,
-                  metrics: dict, n_train: int, s: Settings) -> list[Path]:
-    model_path = art / "models" / f"hgb_day{cutoff}.skops"
+                  metrics: dict, n_train: int, s: Settings, deployed: str) -> list[Path]:
+    model_path = art / "models" / f"model_day{cutoff}.skops"
     model_path.parent.mkdir(parents=True, exist_ok=True)
     sio.dump(model, model_path)
     schema = {
-        "cutoff": cutoff, "version": __version__, "model": DEPLOY_MODEL,
+        "cutoff": cutoff, "version": __version__, "model": deployed,
         "model_file": model_path.name, "threshold": round(threshold, 4),
         "bands": {"moderate": BAND_MODERATE, "high": BAND_HIGH},
         "metrics": {k: metrics[k] for k in ("roc_auc", "f1", "precision", "recall", "accuracy",
@@ -468,7 +484,28 @@ def save_deployed(art: Path, cutoff: int, model, ff: FeatureFrame, Xtr, threshol
 
 
 # --------------------------------------------------------------------------- main study
-def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = False) -> dict:
+def cached_primary_study(ff: FeatureFrame, s: Settings, cache: Path | None,
+                         reuse: bool) -> dict:
+    """Run (or reload) the expensive primary study. The cache is local-only, never deployed."""
+    import pickle  # noqa: PLC0415
+
+    path = cache / f"primary_day{ff.cutoff}_{'quick' if s.quick else 'full'}.pkl" if cache \
+        else None
+    if reuse and path is not None and path.exists():
+        log(f"reusing cached primary study {path}")
+        study = pickle.loads(path.read_bytes())  # noqa: S301 (our own local cache file)
+    else:
+        study = primary_study(ff, s)
+        study.pop("data")
+        if path is not None:
+            path.write_bytes(pickle.dumps(study))
+    Xtr, ytr, gtr, Xte, yte, meta_te = split(ff)
+    study["data"] = (Xtr, ytr, gtr, Xte, yte, meta_te, cv_splits(Xtr, ytr, gtr, s.n_folds))
+    return study
+
+
+def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = False,
+        reuse_primary: bool = False) -> dict:
     s = Settings.quick_mode() if quick else Settings()
     started = time.time()
     art = out_root / "artifacts"
@@ -486,7 +523,10 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
 
     features = {c: build_features(tables, c) for c in s.cutoffs}
     primary_ff = features[PRIMARY_CUTOFF]
-    study = primary_study(primary_ff, s)
+    study = cached_primary_study(primary_ff, s, cache, reuse_primary)
+    deployed = study["deployed"]
+    deploy_base = base_name(deployed)
+    log(f"champion={study['champion']} deployed={deployed}")
     Xtr, ytr, gtr, Xte, yte, _meta_te, _splits = study["data"]
     by_name = {r["name"]: r for r in study["records"]}
 
@@ -501,16 +541,16 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
         entry = {"cutoff": cutoff, "n_train": len(a_Xtr), "n_test": len(a_Xte),
                  "at_risk_rate_test": round(float(a_yte.mean()), 4),
                  "at_risk_remaining_test": int(a_yte.sum()), "models": {}}
-        for name, est in timeline_estimators(study["best_params"], s).items():
+        for name, est in timeline_estimators(study["best_params"], s, deployed).items():
             pipe = pipeline_for(name, est, ff.numeric, ff.categorical)
             rec, model, p, _ = evaluate(name, pipe, a_Xtr, a_ytr, a_Xte, a_yte, a_splits, s,
-                                        ci=name == DEPLOY_MODEL)
+                                        ci=name == deploy_base)
             entry["models"][name] = {**{k: rec["test"][k] for k in (
                 "roc_auc", "f1", "precision", "recall", "accuracy", "pr_auc", "tp", "fp", "fn",
                 "tn")}, "threshold": rec["threshold"], "ci95": rec["ci95"]}
-            if name == DEPLOY_MODEL:
+            if name == deploy_base:
                 served += save_deployed(art, cutoff, model, ff, a_Xtr, rec["threshold"],
-                                        rec["test"], len(a_Xtr), s)
+                                        rec["test"], len(a_Xtr), s, deployed)
                 if cutoff == PRIMARY_CUTOFF:
                     deployed_model, deployed_test_p = model, p
                     deployed_threshold = rec["threshold"]
@@ -538,7 +578,8 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
     for label, cols in variants.items():
         num = [c for c in primary_ff.numeric if c in cols]
         cat = [c for c in primary_ff.categorical if c in cols]
-        pipe = pipeline_for(DEPLOY_MODEL, deploy_estimator(study["best_params"]), num, cat)
+        pipe = pipeline_for(deploy_base, deploy_estimator(deployed, study["best_params"],
+                                                           s.n_jobs), num, cat)
         rec, _, p, _ = evaluate(label, pipe, Xtr[cols], ytr, Xte[cols], yte, abl_splits, s,
                                 ci=False)
         ablation.append({"variant": label, "n_features": len(cols),
@@ -608,11 +649,11 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
                      "cv_roc_auc": champ_rec["cv"]["roc_auc"], "ci95": champ_rec["ci95"]},
         "deployed": {"name": deployed_rec["name"], "test": deployed_rec["test"],
                      "cv_roc_auc": deployed_rec["cv"]["roc_auc"], "ci95": deployed_rec["ci95"],
-                     "reason": "Best scikit-learn-native model: runs on the serverless "
-                               "runtime without native OpenMP libraries and loads securely "
-                               "with skops."},
+                     "reason": "Highest cross-validated ROC-AUC among scikit-learn-native "
+                               "models, which run on the serverless runtime without extra "
+                               "native libraries and load securely with skops."},
         "early_warning": {"cutoff": PRIMARY_CUTOFF,
-                          **primary_timeline["models"][DEPLOY_MODEL],
+                          **primary_timeline["models"][deploy_base],
                           "at_risk_remaining_test": primary_timeline["at_risk_remaining_test"]},
         "notes": s.notes,
     }
@@ -624,8 +665,8 @@ def run(data_dir: Path = DEFAULT_DATA_DIR, out_root: Path = ROOT, quick: bool = 
         "tuning": study["tuning"]})
     write_json(gen / "curves.json", study["curves"])
     write_json(gen / "timeline.json", {"models": list(s.timeline_models),
-                                       "deployed": DEPLOY_MODEL, "cutoffs": timeline})
-    write_json(gen / "ablation.json", {"model": DEPLOY_MODEL, "variants": ablation})
+                                       "deployed": deploy_base, "cutoffs": timeline})
+    write_json(gen / "ablation.json", {"model": deployed, "variants": ablation})
     write_json(gen / "importance.json", {"permutation": perm_rows, "shap": shap,
                                          "shap_model": "LightGBM (tuned)" if shap else None})
     write_json(gen / "fairness.json", fairness)
@@ -650,8 +691,10 @@ def main() -> None:
     parser.add_argument("--data-dir", type=Path, default=DEFAULT_DATA_DIR)
     parser.add_argument("--out-root", type=Path, default=ROOT)
     parser.add_argument("--quick", action="store_true")
+    parser.add_argument("--reuse-primary", action="store_true",
+                        help="reload the cached day-60 study instead of re-training it")
     args = parser.parse_args()
-    run(args.data_dir, args.out_root, args.quick)
+    run(args.data_dir, args.out_root, args.quick, args.reuse_primary)
 
 
 if __name__ == "__main__":

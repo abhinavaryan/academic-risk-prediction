@@ -48,14 +48,15 @@ MODEL_INFO: dict[str, dict[str, str]] = {
     "Stacked Ensemble": {"family": "Stacking ensemble", "short": "Stack"},
 }
 
+# Ordered fastest/strongest first so a tight time budget still yields good candidates.
 SERVING_MODELS = (
     "Logistic Regression",
-    "Decision Tree",
+    "Gradient Boosting (HistGB)",
     "Random Forest",
     "Extra Trees",
-    "Gradient Boosting (HistGB)",
-    "k-Nearest Neighbours",
+    "Decision Tree",
     "Naive Bayes",
+    "k-Nearest Neighbours",
     "Neural Network (MLP)",
 )
 

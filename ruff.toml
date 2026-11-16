@@ -5,7 +5,7 @@ extend-exclude = ["web", ".venv", "notebooks"]
 [lint]
 select = ["E", "F", "W", "I", "B", "UP", "S", "SIM", "PL", "RUF"]
 ignore = [
-  "PLR0913",  # many-argument functions are fine for config-heavy ML code
+  "PLR0913", "PLR0917",  # many-argument functions are fine for config-heavy ML code
   "PLR2004",  # magic numbers are domain constants here
   "PLR0915", "PLR0912", "PLR0911",
   "S101",     # assert is fine in tests

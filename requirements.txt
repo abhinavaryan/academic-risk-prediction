@@ -1,6 +1,6 @@
 # Runtime dependencies for the web API (Vercel / Docker / local).
 # Kept deliberately small: research-only libraries live in requirements-research.txt.
-fastapi==0.163.1
+fastapi==0.165.0
 uvicorn==0.54.0
 pydantic==2.14.3
 python-multipart==0.0.34
